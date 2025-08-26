@@ -50,9 +50,9 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
+          <CardTitle className="text-2xl">Login to Duckit</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account
+            Enter your email below to login to your Duckit account
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -63,7 +63,7 @@ export function LoginForm({
                 <Input
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder="name@example.com"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}

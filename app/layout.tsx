@@ -7,7 +7,7 @@ const defaultUrl = process.env.HOST_URL || "http://localhost:3000";
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
+  title: "DuckIt",
   description: "The fastest way to build apps with Next.js and Supabase",
 };
 
@@ -27,7 +27,7 @@ export default function RootLayout({
       <body className={`${geistSans.className} antialiased`}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
