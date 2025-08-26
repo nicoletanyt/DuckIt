@@ -8,7 +8,7 @@ const defaultUrl = process.env.HOST_URL || "http://localhost:3000";
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
   title: "DuckIt",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  description: "DuckIt",
 };
 
 const geistSans = Geist({
