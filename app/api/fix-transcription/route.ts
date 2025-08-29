@@ -1,0 +1,74 @@
+import { cerebras } from '@ai-sdk/cerebras';
+import { generateText } from 'ai';
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function POST(request: NextRequest) {
+  try {
+    const { rawTranscription, previousGeneration } = await request.json();
+
+    if (!rawTranscription || typeof rawTranscription !== 'string') {
+      return NextResponse.json(
+        { error: 'Raw transcription is required and must be a string' },
+        { status: 400 }
+      );
+    }
+
+    const model = cerebras('llama-3.3-70b');
+
+    // Build the prompt with context
+    let prompt = `You are a transcription fixer. Your job is to take potentially messy, auto-transcribed text and convert it into clean, well-formatted markdown.
+
+IMPORTANT INSTRUCTIONS:
+1. Fix spelling errors, grammar mistakes, and transcription artifacts. If unsure, leave a word as-is.
+2. Add proper punctuation and capitalization
+3. Format the text as markdown with appropriate headers, lists, emphasis, etc.
+4. Preserve the original meaning and content
+5. If you see obvious mistakes in your previous generation (provided below), fix them
+6. Make the text flow naturally and coherently, for example by removing filler words ("umm"), transitions \
+that are made redundant by list formatting ("firstly", or "and"/"or" before the last element)
+7. Remove user mistakes, for example "wait no I meant"
+8. Do NOT add content that wasn't in the original transcription. This is VERY IMPORTANT - do NOT ADD CONTENT. \
+Do not add headers, unless it is clear that part of the transcription is intended as a header.
+9. Return ONLY the fixed markdown - no explanations, meta-commentary.
+
+If you do not have enough context to determine if a word should be removed, moved, or fixed (eg. incomplete sentence), please leave it as-is.
+`;
+
+    if (previousGeneration && previousGeneration.trim().length > 0) {
+      prompt += `PREVIOUS AI GENERATION (may contain errors - please review and correct):
+${previousGeneration.trim()}
+
+RAW TRANSCRIPTION TO PROCESS (complete text so far):
+${rawTranscription.trim()}
+
+Please provide the complete fixed transcription as markdown. Compare your previous generation with the raw transcription and fix any errors in either. The raw transcription may have spelling/grammar errors, and your previous generation may have mistakes due to limited context:`;
+    } else {
+      prompt += `RAW TRANSCRIPTION TO FIX:
+${rawTranscription.trim()}
+
+Please provide the fixed transcription as markdown:`;
+    }
+
+    console.log("Generated prompt:", prompt);
+
+    const result = await generateText({
+      model,
+      prompt,
+      temperature: 0.1, // Low temperature for consistent formatting
+      // maxTokens: 2000,
+    });
+
+    console.log("AI response:", result.text.trim());
+
+    return NextResponse.json({
+      fixedText: result.text.trim(),
+    });
+
+  } catch (error) {
+    console.error('Error in fix-transcription API:', error);
+    return NextResponse.json(
+      { error: 'Failed to process transcription' },
+      { status: 500 }
+    );
+  }
+}
