@@ -29,7 +29,7 @@ export default function Record() {
 
   const startRecording = async () => {
     console.log("recording started");
-    if (browserSupportsSpeechRecognition) {
+    if (browserSupportsContinuousListening) {
       await SpeechRecognition.startListening({ continuous: true })
     } else {
       await SpeechRecognition.startListening()
