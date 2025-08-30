@@ -30,6 +30,7 @@ import { FaGoogleDrive } from "react-icons/fa";
 
 import SessionCard from "@/components/session-card";
 import FileItem from "@/components/file-item";
+import Link from "next/link";
 
 const test_sessions: Session[] = [
   {
@@ -83,11 +84,15 @@ export default function page({ params }: { params: { topicId: string } }) {
         </TabsList>
         <TabsContent value="session">
           <div className="space-y-8">
-            <h1 className="text-3xl font-bold text-center">Start Recording</h1>
+            <h1 className="text-3xl font-bold text-center my-8">
+              Start Recording
+            </h1>
             {/* recording button */}
-            <div className="bg-white rounded-full p-10 w-fit justify-center items-center mx-auto">
-              <Mic color="#0F172A" size={50} strokeWidth={2} />
-            </div>
+            <Link href={`/topics/session`} className="flex">
+              <div className="bg-white rounded-full p-10 w-fit justify-center items-center mx-auto inline-block">
+                <Mic color="#0F172A" size={50} strokeWidth={2} />
+              </div>
+            </Link>
             {/* list of files */}
             <h2 className="text-2xl font-semibold">Files</h2>
             <div>
