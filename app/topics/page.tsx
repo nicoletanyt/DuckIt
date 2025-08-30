@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import "../globals.css";
 
@@ -82,8 +82,13 @@ const test_files = ["notes.txt", "math.txt", "notes++.txt"];
 export default function TopicPage({ params }: { params: { topicId: string } }) {
   const [viewType, setViewType] = useState(ViewType.List);
 
-  // TODO: get the files from the database
+  // TODO: CHANGE TEST_FILES AND TEST_SESSIONS
   const [files, setFiles] = useState(test_files);
+
+  // search feature
+  const defaultSessions = test_sessions;
+  const [sessionShown, setSessionShown] = useState(defaultSessions);
+  const [search, setSearch] = useState("");
 
   // set data
   const topicTitle = "Data Science";
@@ -94,6 +99,18 @@ export default function TopicPage({ params }: { params: { topicId: string } }) {
   // to set if the summary tab is showing the detail or list
   const [isDetail, setIsDetail] = useState(details ? Boolean(details) : false);
   const [cardClicked, setCardClicked] = useState(0);
+
+  useEffect(() => {
+    if (search) {
+      setSessionShown(
+        defaultSessions.filter((sess) =>
+          sess.name.toLowerCase().includes(search.toLowerCase()),
+        ),
+      );
+    } else {
+      setSessionShown(defaultSessions);
+    }
+  }, [search]);
 
   const switchView = () => {
     setViewType(viewType == ViewType.Grid ? ViewType.List : ViewType.Grid);
@@ -193,18 +210,18 @@ export default function TopicPage({ params }: { params: { topicId: string } }) {
                     </>
                   )}
                 </Button>
-                <SearchBar />
+                <SearchBar search={search} setSearch={setSearch} />
               </div>
             )}
             {isDetail ? (
               // TODO: REMOVE TEST_SESSIONS
-              <SummaryDetails session={test_sessions[cardClicked]} />
+              <SummaryDetails session={sessionShown[cardClicked]} />
             ) : (
               // display sessions list
               <div
                 className={`py-5 grid ${viewType == ViewType.Grid ? "grid-cols-3 gap-10" : "grid-cols-1 gap-8"}`}
               >
-                {test_sessions.map((item, i) => (
+                {sessionShown.map((item, i) => (
                   <span key={i} onClick={() => setCardClicked(i)}>
                     <SessionCard session={item} setIsDetail={setIsDetail} />
                   </span>
