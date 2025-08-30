@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
@@ -12,6 +12,9 @@ import { Button } from "@/components/ui/button";
 import { AnimationTypes, ANIMATION_FRAMES } from "@/lib/Animation";
 import { buttonVariants } from "@/components/ui/button";
 import FeedbackItem from "@/components/feedback-item";
+
+// for audio
+import { Howl } from "howler";
 
 export default function SessionPage() {
   // for animation
@@ -29,6 +32,21 @@ export default function SessionPage() {
   // handle the time
   const [time, setTime] = useState(0);
 
+  const soundRef = useRef<Howl | null>(null);
+
+  useEffect(() => {
+    soundRef.current = new Howl({
+      src: ["/sound/quack.mp3"],
+      preload: true, // important
+    });
+  }, []);
+
+  // handle audio
+  const handlePlay = () => {
+    soundRef.current?.play();
+  };
+
+  // animation
   useEffect(() => {
     const interval = setInterval(() => {
       // stop animation if is hesitating
@@ -80,7 +98,12 @@ export default function SessionPage() {
           </ul>
         </div>
       </div>
-      <Button onClick={() => setIsTalking(isTalking ? false : true)}>
+      <Button
+        onClick={() => {
+          setIsTalking(isTalking ? false : true);
+          handlePlay();
+        }}
+      >
         Stop Duck (testing)
       </Button>
       <p className="italic">

@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
+import "../globals.css";
 
 // import interfaces
 import { Session } from "@/lib/Session";
@@ -104,17 +105,25 @@ export default function TopicPage({ params }: { params: { topicId: string } }) {
 
   return (
     <div className="px-20 py-10 space-y-8">
-      <h1 className="text-3xl font-bold">{topicTitle}</h1>
+      <h1>{topicTitle}</h1>
       <Tabs defaultValue={details ? "summary" : "session"}>
         <TabsList>
-          <TabsTrigger value="session">New Session</TabsTrigger>
-          <TabsTrigger value="summary">Summary</TabsTrigger>
+          <TabsTrigger
+            value="session"
+            className="dark:data-[state=active]:text-white"
+          >
+            New Session
+          </TabsTrigger>
+          <TabsTrigger
+            value="summary"
+            className="dark:data-[state=active]:text-white"
+          >
+            Summary
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="session">
           <div className="space-y-8">
-            <h1 className="text-3xl font-bold text-center my-8">
-              Start Recording
-            </h1>
+            <h1 className="text-center my-8">Start Recording</h1>
             {/* recording button */}
             <Link
               href={{
@@ -128,7 +137,7 @@ export default function TopicPage({ params }: { params: { topicId: string } }) {
               </div>
             </Link>
             {/* list of files */}
-            <h2 className="text-2xl font-semibold">Files</h2>
+            <h2>Files</h2>
             <div>
               {files.map((ele, i) => (
                 <div key={i} className="flex justify-between space-y-3">
