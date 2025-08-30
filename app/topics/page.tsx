@@ -7,9 +7,27 @@ import { ViewType } from "@/lib/ViewType";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import SearchBar from "@/components/search-bar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { buttonVariants } from "@/components/ui/button";
 
 // Import icons
-import { Import, LayoutGrid, LayoutList, Mic, Trash2 } from "lucide-react";
+import {
+  Import,
+  LayoutGrid,
+  LayoutList,
+  Mic,
+  MonitorSmartphone,
+  Trash2,
+} from "lucide-react";
+import { FaGoogleDrive } from "react-icons/fa";
+
 import SessionCard from "@/components/session-card";
 import FileItem from "@/components/file-item";
 
@@ -83,10 +101,24 @@ export default function page({ params }: { params: { topicId: string } }) {
               ))}
             </div>
             {/* import button */}
-            <Button className="text-white" variant={"outline"} size={"lg"}>
-              <Import />
-              Import
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <div className={buttonVariants({ variant: "default" })}>
+                  <Import />
+                  Import
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem>
+                  <FaGoogleDrive />
+                  Google Drive
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <MonitorSmartphone />
+                  My Device
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </TabsContent>
         <TabsContent value="summary">
