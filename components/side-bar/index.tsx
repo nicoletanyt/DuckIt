@@ -1,0 +1,43 @@
+import { createClient } from "@/lib/supabase/client";
+import React from "react";
+import { Database } from "@/database.types";
+import Link from "next/link";
+import TopicItem from "./topic-item";
+
+interface ChatItem {
+  id: string;
+  title: string;
+}
+
+export default async function Sidebar() {
+  const supabase = createClient();
+  const { data: topics, error } = await supabase.from("topics").select();
+
+  return (
+    <div className="hidden md:flex md:flex-col w-64 bg-background text-white h-screen p-4 border-r-2 border-r-secondary">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-center">DuckIt</h1>
+      </div>
+
+      <div className="space-y-3 mb-8">
+        <button className="w-full py-3 px-4 hover:bg-neutral-900 border-[1px] border-yellow-600 rounded-lg font-medium transition-colors text-left">
+          New Topic
+        </button>
+        <button className="w-full py-3 px-4 bg-gray-700 hover:bg-gray-600 rounded-lg font-medium transition-colors text-left">
+          Search Topics
+        </button>
+      </div>
+
+      <div className="flex-1">
+        <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-wide mb-4 pl-2">
+          Topics
+        </h2>
+        <div className="space-y-2">
+          {topics?.map((topic) => (
+            <TopicItem key={topic.id} topic={topic} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
