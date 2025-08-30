@@ -110,6 +110,7 @@ export default function TranscriptionFixer() {
       setState(prev => ({
         ...prev,
         aiGeneratedContent: fixedText,
+        unprocessed: '',
         lastAiUpdateWordCount: wordCount,
       }));
     } catch (error) {
@@ -231,9 +232,9 @@ export default function TranscriptionFixer() {
               <p className="text-sm text-gray-600">Processed & formatted version</p>
             </div>
             <div className="p-6">
-              {state.aiGeneratedContent ? (
+              {(state.aiGeneratedContent || state.unprocessed) ? (
                 <div className="prose prose-lg max-w-none">
-                  <MarkdownRenderer markdownText={state.aiGeneratedContent} />
+                  <MarkdownRenderer markdownText={state.aiGeneratedContent + state.unprocessed} />
                 </div>
               ) : (
                 <div className="text-gray-500 italic">

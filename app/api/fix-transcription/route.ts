@@ -19,17 +19,21 @@ export async function POST(request: NextRequest) {
     let prompt = `You are a transcription fixer. Your job is to take potentially messy, auto-transcribed text and convert it into clean, well-formatted markdown.
 
 IMPORTANT INSTRUCTIONS:
-1. Fix spelling errors, grammar mistakes, and transcription artifacts. If unsure, leave a word as-is.
-2. Add proper punctuation and capitalization
-3. Format the text as markdown with appropriate headers, lists, emphasis, etc.
-4. Preserve the original meaning and content
-5. If you see obvious mistakes in your previous generation (provided below), fix them
-6. Make the text flow naturally and coherently, for example by removing filler words ("umm"), transitions \
+- Fix spelling errors, grammar mistakes, and transcription artifacts. If unsure, leave a word as-is.
+- Add proper punctuation and capitalization
+- Format the text as markdown with appropriate lists, emphasis, etc.
+- Lists may only begin with a dash ("-") or asterisk ("*"). Currently only a single \
+layer of lists is supported, so ensure lists only contain related information.
+- If you see obvious mistakes in your previous generation (provided below), fix them
+- Make the text flow naturally and coherently, for example by removing filler words ("umm"), transitions \
 that are made redundant by list formatting ("firstly", or "and"/"or" before the last element)
-7. Remove user mistakes, for example "wait no I meant"
-8. Do NOT add content that wasn't in the original transcription. This is VERY IMPORTANT - do NOT ADD CONTENT. \
-Do not add headers, unless it is clear that part of the transcription is intended as a header.
-9. Return ONLY the fixed markdown - no explanations, meta-commentary.
+- Remove user mistakes, for example "wait no I meant"
+- Do NOT add content that wasn't in the original transcription. This is VERY IMPORTANT - do NOT ADD CONTENT. \
+Do NOT add headers.
+- Highlight incorrect information within the transcript as \`==red==[incorrect content here]==/red==\`. \
+You may highlight a word, a phrase, or a sentence, but not more than one sentence as a single highlight. \
+Do NOT correct the original transcription. Do NOT comment or write notes on what was incorrect, simply point it out.
+- Return ONLY the fixed markdown - NO explanations, meta-commentary.
 
 If you do not have enough context to determine if a word should be removed, moved, or fixed (eg. incomplete sentence), please leave it as-is.
 `;
@@ -46,7 +50,7 @@ Please provide the complete fixed transcription as markdown. Compare your previo
       prompt += `RAW TRANSCRIPTION TO FIX:
 ${rawTranscription.trim()}
 
-Please provide the fixed transcription as markdown:`;
+Please provide the fixed transcription as markdown. Reminder that PRESERVING THE ORIGINAL TRANSCRIPT'S MEANING IS VERY IMPORTANT, and you should NOT ADD ANY CONTENT that was not in the original transcript:`;
     }
 
     console.log("Generated prompt:", prompt);
