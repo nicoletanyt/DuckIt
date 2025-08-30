@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
-import "./globals.css";
+import "./../globals.css";
 import Sidebar from "@/components/side-bar";
 
 const defaultUrl = process.env.HOST_URL || "http://localhost:3000";
