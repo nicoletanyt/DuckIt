@@ -17,10 +17,10 @@ export default async function Sidebar() {
       </div>
 
       <div className="space-y-3 mb-8">
-        <button className="w-full py-3 px-4 hover:bg-neutral-900 border-[1px] border-yellow-600 rounded-lg font-medium transition-colors text-left">
+        <button className="w-full py-2 px-3 hover:bg-neutral-900 border-[1px] border-yellow-600 rounded-lg transition-colors text-left">
           New Topic
         </button>
-        <button className="w-full py-3 px-4 bg-gray-700 hover:bg-gray-600 rounded-lg font-medium transition-colors text-left">
+        <button className="w-full py-2 px-3 hover:bg-neutral-900 border-[1px] border-yellow-600 rounded-lg transition-colors text-left">
           Search Topics
         </button>
       </div>
