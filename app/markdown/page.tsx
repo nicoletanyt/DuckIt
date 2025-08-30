@@ -1,88 +1,9 @@
 'use client'
 
 import React, { useState } from 'react';
+import MarkdownRenderer from '../../components/MarkdownRenderer';
 
-// Simple markdown parser for basic features
-const parseMarkdown = (text: string) => {
-  if (!text) return '';
-  
-  // Split into lines for processing
-  const lines = text.split('\n');
-  const result: string[] = [];
-  let inUnorderedList = false;
-  let inOrderedList = false;
-  
-  for (let i = 0; i < lines.length; i++) {
-    let line = lines[i];
-    
-    // Check for list items
-    const unorderedMatch = line.match(/^(\s*)[-*]\s+(.+)$/);
-    const orderedMatch = line.match(/^(\s*)\d+\.\s+(.+)$/);
-    
-    if (unorderedMatch) {
-      if (!inUnorderedList) {
-        result.push('<ul>');
-        inUnorderedList = true;
-      }
-      if (inOrderedList) {
-        result.push('</ol>');
-        inOrderedList = false;
-      }
-      result.push(`<li>${unorderedMatch[2]}</li>`);
-    } else if (orderedMatch) {
-      if (!inOrderedList) {
-        result.push('<ol>');
-        inOrderedList = true;
-      }
-      if (inUnorderedList) {
-        result.push('</ul>');
-        inUnorderedList = false;
-      }
-      result.push(`<li>${orderedMatch[2]}</li>`);
-    } else {
-      // Close any open lists
-      if (inUnorderedList) {
-        result.push('</ul>');
-        inUnorderedList = false;
-      }
-      if (inOrderedList) {
-        result.push('</ol>');
-        inOrderedList = false;
-      }
-      
-      // Process regular line
-      if (line.trim() === '') {
-        result.push('<br />');
-      } else {
-        result.push(line);
-      }
-    }
-  }
-  
-  // Close any remaining open lists
-  if (inUnorderedList) result.push('</ul>');
-  if (inOrderedList) result.push('</ol>');
-  
-  // Join and apply other markdown formatting
-  let html = result.join('\n')
-    // Headers
-    .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-    .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-    .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-    // Bold and italic
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    // Code
-    .replace(/`(.*?)`/g, '<code>$1</code>')
-    // Custom highlights
-    .replace(/==red==(.*?)==\/red==/g, '<span class="highlight-red">$1</span>')
-    .replace(/==green==(.*?)==\/green==/g, '<span class="highlight-green">$1</span>')
-    .replace(/==yellow==(.*?)==\/yellow==/g, '<span class="highlight-yellow">$1</span>');
-  
-  return html;
-};
-
-const MarkdownRenderer = () => {
+const InteractiveMarkdownRenderer = () => {
   const [markdownText, setMarkdownText] = useState(`# Markdown with Custom Highlights
 
 This is a **bold** text and this is *italic* text.
@@ -126,85 +47,12 @@ You can also combine **bold** with ==red==highlighted red text==/red== for empha
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
-      <style dangerouslySetInnerHTML={{
-        __html: `
-          .highlight-red {
-            background-color: #fee2e2;
-            color: #dc2626;
-            padding: 2px 4px;
-            border-radius: 3px;
-          }
-          .highlight-green {
-            background-color: #dcfce7;
-            color: #16a34a;
-            padding: 2px 4px;
-            border-radius: 3px;
-          }
-          .highlight-yellow {
-            background-color: #fef3c7;
-            color: #d97706;
-            padding: 2px 4px;
-            border-radius: 3px;
-          }
-          .markdown-content h1 {
-            font-size: 2rem;
-            font-weight: bold;
-            margin: 1rem 0;
-            color: #1f2937;
-          }
-          .markdown-content h2 {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin: 0.75rem 0;
-            color: #374151;
-          }
-          .markdown-content h3 {
-            font-size: 1.25rem;
-            font-weight: bold;
-            margin: 0.5rem 0;
-            color: #4b5563;
-          }
-          .markdown-content {
-            color: #000000ff;
-          }
-          .markdown-content code {
-            background-color: #f3f4f6;
-            color: #374151;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            font-size: 0.875rem;
-          }
-          .markdown-content ul {
-            list-style-type: disc;
-            margin: 0.5rem 0;
-            padding-left: 1.5rem;
-          }
-          .markdown-content ol {
-            list-style-type: decimal;
-            margin: 0.5rem 0;
-            padding-left: 1.5rem;
-          }
-          .markdown-content li {
-            margin: 0.25rem 0;
-            line-height: 1.5;
-          }
-          .markdown-content strong {
-            font-weight: bold;
-          }
-          .markdown-content em {
-            font-style: italic;
-          }
-        `
-      }} />
-
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
         <div className="bg-gray-50 px-4 py-3 border-b">
           <h2 className="text-lg font-semibold text-gray-800">
             Markdown Editor with Custom Highlighting
           </h2>
         </div>
-        
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
           {/* Input Section */}
           <div className="border-r border-gray-200">
@@ -218,22 +66,17 @@ You can also combine **bold** with ==red==highlighted red text==/red== for empha
               placeholder="Enter your markdown here..."
             />
           </div>
-          
           {/* Output Section */}
           <div>
             <div className="bg-gray-100 px-4 py-2 text-sm font-medium text-gray-600">
               Rendered Output
             </div>
-            <div 
-              className="h-96 p-4 overflow-auto markdown-content"
-              dangerouslySetInnerHTML={{ 
-                __html: parseMarkdown(markdownText) 
-              }}
-            />
+            <div className="h-96 p-4 overflow-auto markdown-content">
+              <MarkdownRenderer markdownText={markdownText} />
+            </div>
           </div>
         </div>
       </div>
-      
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <h3 className="font-semibold text-blue-800 mb-2">Highlighting Syntax:</h3>
         <div className="text-sm text-blue-700 space-y-1">
@@ -246,4 +89,4 @@ You can also combine **bold** with ==red==highlighted red text==/red== for empha
   );
 };
 
-export default MarkdownRenderer;
+export default InteractiveMarkdownRenderer;

@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import ReactMarkdown from 'react-markdown';
+import MarkdownRenderer from '@/components/MarkdownRenderer';
 
 interface TranscriptionState {
   currentTranscript: string; // The current full transcript from the API
   aiGeneratedContent: string; // The AI's current fixed version
+  unprocessed: string; // The portion of the transcript that hasn't been processed yet, appended to the end of the fixed markdown
   isProcessing: boolean;
   wordsProcessedCount: number; // How many words we've processed so far
   lastAiUpdateWordCount: number; // Word count when AI last updated
@@ -16,6 +17,7 @@ export default function TranscriptionFixer() {
   const [state, setState] = useState<TranscriptionState>({
     currentTranscript: '',
     aiGeneratedContent: '',
+    unprocessed: '',
     isProcessing: false,
     wordsProcessedCount: 0,
     lastAiUpdateWordCount: 0,
@@ -59,6 +61,14 @@ export default function TranscriptionFixer() {
         return;
       }
 
+      // get the next word, append it to unprocessed
+      const nextWord = words[currentWordIndex];
+      setState(prev => ({
+        ...prev,
+        unprocessed: prev.unprocessed + ' ' + nextWord,
+      }));
+
+      // then slice the new full transcript, including that next word
       currentWordIndex++;
       const newTranscript = words.slice(0, currentWordIndex).join(' ');
       
@@ -121,6 +131,7 @@ export default function TranscriptionFixer() {
     setState({
       currentTranscript: '',
       aiGeneratedContent: '',
+      unprocessed: '',
       isProcessing: false,
       wordsProcessedCount: 0,
       lastAiUpdateWordCount: 0,
@@ -222,7 +233,7 @@ export default function TranscriptionFixer() {
             <div className="p-6">
               {state.aiGeneratedContent ? (
                 <div className="prose prose-lg max-w-none">
-                  <ReactMarkdown>{state.aiGeneratedContent}</ReactMarkdown>
+                  <MarkdownRenderer markdownText={state.aiGeneratedContent} />
                 </div>
               ) : (
                 <div className="text-gray-500 italic">
