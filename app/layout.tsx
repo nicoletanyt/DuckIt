@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
+import Sidebar from "@/components/side-bar";
 
 const defaultUrl = process.env.HOST_URL || "http://localhost:3000";
 
@@ -24,14 +25,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.className} antialiased`}>
+      <body className={`${geistSans.className} antialiased flex`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <Sidebar />
+          <main className="w-full h-screen">{children}</main>
         </ThemeProvider>
       </body>
     </html>

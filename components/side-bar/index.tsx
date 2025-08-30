@@ -1,20 +1,17 @@
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/server";
 import React from "react";
-import { Database } from "@/database.types";
-import Link from "next/link";
 import TopicItem from "./topic-item";
 
-interface ChatItem {
-  id: string;
-  title: string;
-}
-
 export default async function Sidebar() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: topics, error } = await supabase.from("topics").select();
 
+  if (error) {
+    return <div>Error loading topics</div>;
+  }
+
   return (
-    <div className="hidden md:flex md:flex-col w-64 bg-background text-white h-screen p-4 border-r-2 border-r-secondary">
+    <nav className="hidden md:flex md:flex-col w-64 bg-background text-white h-screen p-4 border-r-2 border-r-secondary">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-center">DuckIt</h1>
       </div>
@@ -38,6 +35,6 @@ export default async function Sidebar() {
           ))}
         </div>
       </div>
-    </div>
+    </nav>
   );
 }
