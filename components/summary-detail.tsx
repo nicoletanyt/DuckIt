@@ -58,12 +58,6 @@ export default function SummaryDetails({ session }: { session: Session }) {
                 filler words
               </p>
             </div>
-
-            {/* <div>
-              <p>
-                <span>{session.summary.fillerWords}</span> filler words
-              </p>
-            </div> */}
           </div>
         </div>
       </div>

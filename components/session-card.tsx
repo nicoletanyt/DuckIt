@@ -35,8 +35,6 @@ export default function SessionCard({
         <Button
           className="underline font-bold text-sm"
           onClick={() => setIsDetail(true)}
-          // href={`/topics/${topicId}/session/${sessionId}/summary`}
-          // href={"/topics/session/summary"}
         >
           View Summary
         </Button>

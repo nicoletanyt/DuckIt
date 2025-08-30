@@ -46,7 +46,7 @@ const test_summary: Summary = {
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ",
 };
 
-const test_sessions: Session[] = [
+const TEST_SESSIONS: Session[] = [
   {
     id: "0",
     name: "Session 1",
@@ -77,21 +77,21 @@ const test_sessions: Session[] = [
   },
 ];
 
-const test_files = ["notes.txt", "math.txt", "notes++.txt"];
+const TEST_FILES = ["notes.txt", "math.txt", "notes++.txt"];
 
 export default function TopicPage({ params }: { params: { topicId: string } }) {
   const [viewType, setViewType] = useState(ViewType.Grid);
 
-  // TODO: CHANGE TEST_FILES AND TEST_SESSIONS
-  const [files, setFiles] = useState(test_files);
+  // TODO: upload files
+  const [files, setFiles] = useState(TEST_FILES);
 
   // search feature
-  const defaultSessions = test_sessions;
+  const defaultSessions = TEST_SESSIONS;
   const [sessionShown, setSessionShown] = useState(defaultSessions);
   const [search, setSearch] = useState("");
 
   // set data
-  const topicTitle = "Data Science";
+  const TEST_TOPICTITLE = "Data Science";
   const searchParams = useSearchParams();
   // see if isdetail is passed in as a query
   const details = searchParams.get("details");
@@ -116,13 +116,14 @@ export default function TopicPage({ params }: { params: { topicId: string } }) {
     setViewType(viewType == ViewType.Grid ? ViewType.List : ViewType.Grid);
   };
 
+  // TODO: create new session ID
   const createNewSession = () => {
-    // create new seasonId
+    return 0;
   };
 
   return (
     <div className="px-20 py-10 space-y-8">
-      <h1>{topicTitle}</h1>
+      <h1>{TEST_TOPICTITLE}</h1>
       <Tabs defaultValue={details ? "summary" : "session"}>
         <TabsList>
           <TabsTrigger
@@ -145,7 +146,10 @@ export default function TopicPage({ params }: { params: { topicId: string } }) {
             <Link
               href={{
                 pathname: `/topics/session`,
-                query: { sessionId: 0, topicTitle: topicTitle },
+                query: {
+                  sessionId: createNewSession(),
+                  topic: TEST_TOPICTITLE,
+                },
               }}
               className="flex"
             >
@@ -214,7 +218,6 @@ export default function TopicPage({ params }: { params: { topicId: string } }) {
               </div>
             )}
             {isDetail ? (
-              // TODO: REMOVE TEST_SESSIONS
               <SummaryDetails session={sessionShown[cardClicked]} />
             ) : (
               // display sessions list

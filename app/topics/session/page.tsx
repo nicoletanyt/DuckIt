@@ -27,7 +27,7 @@ export default function SessionPage() {
 
   // get data
   const searchParams = useSearchParams();
-  const topicTitle = searchParams.get("topicTitle");
+  const topicTitle = searchParams.get("topic");
 
   // handle the time
   const [time, setTime] = useState(0);
@@ -98,6 +98,7 @@ export default function SessionPage() {
           </ul>
         </div>
       </div>
+      {/* TODO */}
       <Button
         onClick={() => {
           setIsTalking(isTalking ? false : true);
@@ -112,6 +113,7 @@ export default function SessionPage() {
         aliqua.”
       </p>
       {/* redirect to summary page */}
+      {/* TODO: topicId */}
       <Link
         // href={`/topics/${topicId}?detail=true`}
         href={"/topics/?details=true"}
