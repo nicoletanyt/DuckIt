@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from "react";
+
 import {
   Card,
   CardContent,
@@ -7,12 +9,18 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import FileItem from "./file-item";
-import Link from "next/link";
+import { Button } from "./ui/button";
 import { Session } from "@/lib/Session";
 
-export default function SessionCard({ session }: { session: Session }) {
+export default function SessionCard({
+  session,
+  setIsDetail,
+}: {
+  session: Session;
+  setIsDetail: Dispatch<SetStateAction<boolean>>;
+}) {
   return (
-    <Card className="w-full grid grid-rows-[auto_1fr]">
+    <Card className="w-full grid grid-rows-[auto_1fr] bg-transparent border-4">
       <CardHeader>
         <CardTitle>{session.name}</CardTitle>
         <CardDescription>Date: {session.date.toDateString()}</CardDescription>
@@ -24,12 +32,14 @@ export default function SessionCard({ session }: { session: Session }) {
         ))}
       </CardContent>
       <CardFooter className="justify-center items-end">
-        <Link
+        <Button
           className="underline font-bold text-sm"
-          href={`/summary/{sessionId}`}
+          onClick={() => setIsDetail(true)}
+          // href={`/topics/${topicId}/session/${sessionId}/summary`}
+          // href={"/topics/session/summary"}
         >
           View Summary
-        </Link>
+        </Button>
       </CardFooter>
     </Card>
   );

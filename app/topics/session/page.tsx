@@ -1,44 +1,102 @@
-import { CheckCircle, StopCircle, XCircle } from "lucide-react";
+"use client";
 
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+
+// import icons
+import { StopCircle } from "lucide-react";
+
+// import components
 import { Button } from "@/components/ui/button";
+import { AnimationTypes, ANIMATION_FRAMES } from "@/lib/Animation";
+import { buttonVariants } from "@/components/ui/button";
+import FeedbackItem from "@/components/feedback-item";
 
-export default function page() {
+export default function SessionPage() {
+  // for animation
+  const [frame, setFrame] = useState(0);
+  const ANIMATION_SPEED = 100;
+  const currAnim = AnimationTypes.WalkNormal;
+
+  // used for the talking border circle
+  const [isTalking, setIsTalking] = useState(true);
+
+  // get data
+  const searchParams = useSearchParams();
+  const topicTitle = searchParams.get("topicTitle");
+
+  // handle the time
+  const [time, setTime] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // stop animation if is hesitating
+      if (isTalking) {
+        setFrame((f) => (f + 1) % ANIMATION_FRAMES[currAnim].length);
+      } else {
+        // set it to the frame where the duck is in a non-moving looking position
+        setFrame(3);
+      }
+    }, ANIMATION_SPEED);
+
+    return () => clearInterval(interval);
+  }, [isTalking]);
+
+  useEffect(() => {
+    // start timer
+    const interval = setInterval(() => {
+      setTime((t) => t + 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="px-20 py-10 space-y-10">
-      <h1 className="text-3xl font-bold">Topic Title</h1>
-      <div className="flex gap-10">
-        {/* duck avatar */}
-        <div className="w-60 h-60 rounded-full bg-white"></div>
+      <h1 className="text-3xl font-bold">{topicTitle}</h1>
+      <div className="flex gap-10 py-10">
+        {/* duck animation */}
+        <div
+          className={`w-70 h-70 rounded-full bg-white border-4 ${isTalking ? "border-green-600" : "border-transparent"}`}
+        >
+          <img
+            className="w-60 h-60 [image-rendering:pixelated]"
+            src={ANIMATION_FRAMES[currAnim][frame]}
+          />
+        </div>
         <div>
-          <p className="text-xl font-bold">Elapsed: 1:03</p>
+          <p className="text-xl font-bold">
+            Elapsed: {Math.round(time / 60)}:{time % 60 < 10 ? 0 : ""}
+            {time % 60}
+          </p>
           <ul className="space-y-5 py-5">
-            <li className="flex gap-3">
-              <CheckCircle color="#00AC47" />
-              <p>Lorem ipsum dolor sit amet</p>
-            </li>
-            <li className="flex gap-3">
-              <CheckCircle color="#00AC47" />
-              <p>Lorem ipsum dolor sit amet</p>
-            </li>
-            <li className="flex gap-3">
-              <XCircle color="#FF383C" />
-              <p>Lorem ipsum dolor sit amet</p>
-            </li>
+            <FeedbackItem correct={true} content="Lorem ipsum dolor sit amet" />
+            <FeedbackItem correct={true} content="Lorem ipsum dolor sit amet" />
+            <FeedbackItem
+              correct={false}
+              content="Lorem ipsum dolor sit amet"
+            />
           </ul>
         </div>
       </div>
+      <Button onClick={() => setIsTalking(isTalking ? false : true)}>
+        Stop Duck (testing)
+      </Button>
       <p className="italic">
         “(Live captions) Lorem ipsum dolor sit amet, consectetur adipiscing
         elit, sed do eiusmod tempor incididunt ut labore et dolore magna
         aliqua.”
       </p>
-      <Button
-        className="w-full py-6 [&>svg]:!w-5 [&>svg]:!h-5 text-lg"
-        variant={"destructive"}
+      {/* redirect to summary page */}
+      <Link
+        // href={`/topics/${topicId}?detail=true`}
+        href={"/topics/?details=true"}
+        className={`w-full py-6 [&>svg]:!w-5 [&>svg]:!h-5 text-lg ${buttonVariants({ variant: "destructive" })}`}
       >
         <StopCircle />
         Stop
-      </Button>
+      </Link>
     </div>
   );
 }
