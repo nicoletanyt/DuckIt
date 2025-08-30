@@ -80,7 +80,7 @@ const test_sessions: Session[] = [
 const test_files = ["notes.txt", "math.txt", "notes++.txt"];
 
 export default function TopicPage({ params }: { params: { topicId: string } }) {
-  const [viewType, setViewType] = useState(ViewType.List);
+  const [viewType, setViewType] = useState(ViewType.Grid);
 
   // TODO: CHANGE TEST_FILES AND TEST_SESSIONS
   const [files, setFiles] = useState(test_files);

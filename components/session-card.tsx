@@ -20,7 +20,7 @@ export default function SessionCard({
   setIsDetail: Dispatch<SetStateAction<boolean>>;
 }) {
   return (
-    <Card className="w-full grid grid-rows-[auto_1fr] bg-transparent border-4">
+    <Card className="h-full w-full grid grid-rows-[auto_1fr] bg-transparent border-4">
       <CardHeader>
         <CardTitle>{session.name}</CardTitle>
         <CardDescription>Date: {session.date.toDateString()}</CardDescription>
