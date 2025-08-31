@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { useSearchParams, redirect } from "next/navigation";
+// import Link from "next/link";
 
 // import icons
 import { StopCircle } from "lucide-react";
@@ -12,18 +12,28 @@ import { Button } from "@/components/ui/button";
 import { AnimationTypes, ANIMATION_FRAMES } from "@/lib/Animation";
 import { buttonVariants } from "@/components/ui/button";
 import FeedbackItem from "@/components/feedback-item";
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
 // for audio
 import { Howl } from "howler";
 
 export default function SessionPage() {
+  // for speech recog
+  const {
+    transcript,
+    listening,
+    browserSupportsSpeechRecognition,
+    isMicrophoneAvailable,
+    browserSupportsContinuousListening
+  } = useSpeechRecognition();
+
   // for animation
   const [frame, setFrame] = useState(0);
   const ANIMATION_SPEED = 100;
   const currAnim = AnimationTypes.WalkNormal;
 
   // used for the talking border circle
-  const [isTalking, setIsTalking] = useState(true);
+  // const [listening, setIsTalking] = useState(true);
 
   // get data
   const searchParams = useSearchParams();
@@ -47,6 +57,16 @@ export default function SessionPage() {
   };
 
   // animation
+  const [isTalking, setIsTalking] = useState(false);
+  // set to not talking if user stops talking after 1.5sec
+  useEffect(() => {
+    if (transcript && transcript.trim().length > 0) {
+      setIsTalking(true);
+      const timeout = setTimeout(() => setIsTalking(false), 1500);
+      return () => clearTimeout(timeout);
+    }
+  }, [transcript]);
+
   useEffect(() => {
     const interval = setInterval(() => {
       // stop animation if is hesitating
@@ -70,13 +90,46 @@ export default function SessionPage() {
     return () => clearInterval(interval);
   }, []);
 
+  // for recording
+  const startRecording = async () => {
+    console.log("recording started");
+    if (browserSupportsContinuousListening) {
+      await SpeechRecognition.startListening({ continuous: true });
+    } else {
+      await SpeechRecognition.startListening();
+    }
+  }
+
+  const stopRecording = async () => {
+    console.log("recording ended");
+    await SpeechRecognition.stopListening()
+    // redirect(`/topics/${topicId}?details=true`) 
+    redirect("/topics/?details=true");
+  }
+
+  useEffect(() => {
+    startRecording();
+  }, []);
+
+  if (!browserSupportsSpeechRecognition) {
+    return (
+      <span>browser does not support speech recognition</span>
+    );
+  }
+
+  if (!isMicrophoneAvailable) {
+    return (
+      <span>microphone is not available</span>
+    );
+  }
+
   return (
     <div className="px-20 py-10 space-y-10">
       <h1 className="text-3xl font-bold">{topicTitle}</h1>
       <div className="flex gap-10 py-10">
         {/* duck animation */}
         <div
-          className={`w-70 h-70 rounded-full bg-white border-4 ${isTalking ? "border-green-600" : "border-transparent"}`}
+          className={`w-70 h-70 rounded-full bg-white border-4 ${listening ? "border-green-600" : "border-transparent"}`}
         >
           <img
             className="w-60 h-60 [image-rendering:pixelated]"
@@ -98,30 +151,20 @@ export default function SessionPage() {
           </ul>
         </div>
       </div>
-      {/* TODO */}
-      <Button
-        onClick={() => {
-          setIsTalking(isTalking ? false : true);
-          handlePlay();
-        }}
-      >
-        Stop Duck (testing)
-      </Button>
       <p className="italic">
-        “(Live captions) Lorem ipsum dolor sit amet, consectetur adipiscing
-        elit, sed do eiusmod tempor incididunt ut labore et dolore magna
-        aliqua.”
+        {transcript}
       </p>
       {/* redirect to summary page */}
       {/* TODO: topicId */}
-      <Link
+      <Button
         // href={`/topics/${topicId}?detail=true`}
-        href={"/topics/?details=true"}
+        // href={"/topics/?details=true"}
+        onClick={stopRecording}
         className={`w-full py-6 [&>svg]:!w-5 [&>svg]:!h-5 text-lg ${buttonVariants({ variant: "destructive" })}`}
       >
         <StopCircle />
         Stop
-      </Link>
+      </Button>
     </div>
   );
 }
