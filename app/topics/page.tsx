@@ -79,22 +79,24 @@ const TEST_SESSIONS: Session[] = [
 
 const TEST_FILES = ["notes.txt", "math.txt", "notes++.txt"];
 
-export default function TopicPage({ params }: { params: { topicId: string } }) {
+export default function TopicPage() {
   const [viewType, setViewType] = useState(ViewType.Grid);
 
   // TODO: upload files
-  const [files, setFiles] = useState(TEST_FILES);
+  // const [files, setFiles] = useState(TEST_FILES);
+  const files = TEST_FILES;
 
   // search feature
   const defaultSessions = TEST_SESSIONS;
   const [sessionShown, setSessionShown] = useState(defaultSessions);
   const [search, setSearch] = useState("");
 
-  // set data
-  const TEST_TOPICTITLE = "Data Science";
   const searchParams = useSearchParams();
   // see if isdetail is passed in as a query
   const details = searchParams.get("details");
+  // TODO: get title
+  // const topicTitle = searchParams.get("title");
+  const topicTitle = "Data Science";
 
   // to set if the summary tab is showing the detail or list
   const [isDetail, setIsDetail] = useState(details ? Boolean(details) : false);
@@ -110,7 +112,7 @@ export default function TopicPage({ params }: { params: { topicId: string } }) {
     } else {
       setSessionShown(defaultSessions);
     }
-  }, [search]);
+  }, [search, defaultSessions]);
 
   const switchView = () => {
     setViewType(viewType == ViewType.Grid ? ViewType.List : ViewType.Grid);
@@ -123,7 +125,7 @@ export default function TopicPage({ params }: { params: { topicId: string } }) {
 
   return (
     <div className="px-20 py-10 space-y-8">
-      <h1>{TEST_TOPICTITLE}</h1>
+      <h1>{topicTitle}</h1>
       <Tabs defaultValue={details ? "summary" : "session"}>
         <TabsList>
           <TabsTrigger
@@ -148,7 +150,7 @@ export default function TopicPage({ params }: { params: { topicId: string } }) {
                 pathname: `/topics/session`,
                 query: {
                   sessionId: createNewSession(),
-                  topic: TEST_TOPICTITLE,
+                  topic: topicTitle,
                 },
               }}
               className="flex"

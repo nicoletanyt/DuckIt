@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 
 // import icons
 import { StopCircle } from "lucide-react";
@@ -59,7 +60,7 @@ export default function SessionPage() {
     }, ANIMATION_SPEED);
 
     return () => clearInterval(interval);
-  }, [isTalking]);
+  }, [isTalking, currAnim]);
 
   useEffect(() => {
     // start timer
@@ -78,9 +79,10 @@ export default function SessionPage() {
         <div
           className={`w-70 h-70 rounded-full bg-white border-4 ${isTalking ? "border-green-600" : "border-transparent"}`}
         >
-          <img
-            className="w-60 h-60 [image-rendering:pixelated]"
+          <Image
             src={ANIMATION_FRAMES[currAnim][frame]}
+            className="w-60 h-60 [image-rendering:pixelated]"
+            alt={"Duck Animation"}
           />
         </div>
         <div>
