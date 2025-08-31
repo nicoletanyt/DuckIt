@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, Suspense } from "react";
+import { useEffect, useState, useRef, Suspense, use } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -17,7 +17,12 @@ import FeedbackItem from "@/components/feedback-item";
 // for audio
 import { Howl } from "howler";
 
-export default function SessionPage() {
+export default function SessionPage({
+  params,
+}: {
+  params: Promise<{ topicId: string }>;
+}) {
+  const { topicId } = use(params);
   // for animation
   const [frame, setFrame] = useState(0);
   const ANIMATION_SPEED = 100;
@@ -82,6 +87,8 @@ export default function SessionPage() {
           >
             <Image
               src={ANIMATION_FRAMES[currAnim][frame]}
+              width={240}
+              height={240}
               className="w-60 h-60 [image-rendering:pixelated]"
               alt={"Duck Animation"}
             />
@@ -124,8 +131,7 @@ export default function SessionPage() {
         {/* redirect to summary page */}
         {/* TODO: topicId */}
         <Link
-          // href={`/topics/${topicId}?detail=true`}
-          href={"/topics/?details=true"}
+          href={`/t/${topicId}?detail=true`}
           className={`w-full py-6 [&>svg]:!w-5 [&>svg]:!h-5 text-lg ${buttonVariants({ variant: "destructive" })}`}
         >
           <StopCircle />
