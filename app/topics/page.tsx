@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import "../globals.css";
 
@@ -124,118 +124,124 @@ export default function TopicPage() {
   };
 
   return (
-    <div className="px-20 py-10 space-y-8">
-      <h1>{topicTitle}</h1>
-      <Tabs defaultValue={details ? "summary" : "session"}>
-        <TabsList>
-          <TabsTrigger
-            value="session"
-            className="dark:data-[state=active]:text-white"
-          >
-            New Session
-          </TabsTrigger>
-          <TabsTrigger
-            value="summary"
-            className="dark:data-[state=active]:text-white"
-          >
-            Summary
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value="session">
-          <div className="space-y-8">
-            <h1 className="text-center my-8">Start Recording</h1>
-            {/* recording button */}
-            <Link
-              href={{
-                pathname: `/topics/session`,
-                query: {
-                  sessionId: createNewSession(),
-                  topic: topicTitle,
-                },
-              }}
-              className="flex"
+    <Suspense>
+      <div className="px-20 py-10 space-y-8">
+        <h1>{topicTitle}</h1>
+        <Tabs defaultValue={details ? "summary" : "session"}>
+          <TabsList>
+            <TabsTrigger
+              value="session"
+              className="dark:data-[state=active]:text-white"
             >
-              <div className="bg-white rounded-full p-10 w-fit justify-center items-center mx-auto inline-block">
-                <Mic color="#0F172A" size={50} strokeWidth={2} />
-              </div>
-            </Link>
-            {/* list of files */}
-            <h2>Files</h2>
-            <div>
-              {files.map((ele, i) => (
-                <div key={i} className="flex justify-between space-y-3">
-                  <FileItem fileName={ele} />
-                  <Button variant="secondary" size="sm">
-                    <Trash2 color="#FF383C" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-            {/* import button */}
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <div className={buttonVariants({ variant: "default" })}>
-                  <Import />
-                  Import
-                </div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem>
-                  <FaGoogleDrive />
-                  Google Drive
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <MonitorSmartphone />
-                  My Device
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </TabsContent>
-        <TabsContent value="summary">
-          <div className="my-5">
-            {/* top bar */}
-            {isDetail ? (
-              // return button
-              <Button onClick={() => setIsDetail(false)}>
-                <ArrowLeft />
-                Back
-              </Button>
-            ) : (
-              <div className="flex justify-between">
-                <Button className="px-0" variant={"ghost"} onClick={switchView}>
-                  {viewType == ViewType.Grid ? (
-                    <>
-                      <LayoutList />
-                      <p>List View</p>
-                    </>
-                  ) : (
-                    <>
-                      <LayoutGrid />
-                      <p>Grid View</p>
-                    </>
-                  )}
-                </Button>
-                <SearchBar search={search} setSearch={setSearch} />
-              </div>
-            )}
-            {isDetail ? (
-              <SummaryDetails session={sessionShown[cardClicked]} />
-            ) : (
-              // display sessions list
-              <div
-                className={`py-5 grid ${viewType == ViewType.Grid ? "grid-cols-3 gap-10" : "grid-cols-1 gap-8"}`}
+              New Session
+            </TabsTrigger>
+            <TabsTrigger
+              value="summary"
+              className="dark:data-[state=active]:text-white"
+            >
+              Summary
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="session">
+            <div className="space-y-8">
+              <h1 className="text-center my-8">Start Recording</h1>
+              {/* recording button */}
+              <Link
+                href={{
+                  pathname: `/topics/session`,
+                  query: {
+                    sessionId: createNewSession(),
+                    topic: topicTitle,
+                  },
+                }}
+                className="flex"
               >
-                {sessionShown.map((item, i) => (
-                  <span key={i} onClick={() => setCardClicked(i)}>
-                    <SessionCard session={item} setIsDetail={setIsDetail} />
-                  </span>
+                <div className="bg-white rounded-full p-10 w-fit justify-center items-center mx-auto inline-block">
+                  <Mic color="#0F172A" size={50} strokeWidth={2} />
+                </div>
+              </Link>
+              {/* list of files */}
+              <h2>Files</h2>
+              <div>
+                {files.map((ele, i) => (
+                  <div key={i} className="flex justify-between space-y-3">
+                    <FileItem fileName={ele} />
+                    <Button variant="secondary" size="sm">
+                      <Trash2 color="#FF383C" />
+                    </Button>
+                  </div>
                 ))}
               </div>
-            )}
-          </div>
-        </TabsContent>
-      </Tabs>
-    </div>
+              {/* import button */}
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <div className={buttonVariants({ variant: "default" })}>
+                    <Import />
+                    Import
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem>
+                    <FaGoogleDrive />
+                    Google Drive
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <MonitorSmartphone />
+                    My Device
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </TabsContent>
+          <TabsContent value="summary">
+            <div className="my-5">
+              {/* top bar */}
+              {isDetail ? (
+                // return button
+                <Button onClick={() => setIsDetail(false)}>
+                  <ArrowLeft />
+                  Back
+                </Button>
+              ) : (
+                <div className="flex justify-between">
+                  <Button
+                    className="px-0"
+                    variant={"ghost"}
+                    onClick={switchView}
+                  >
+                    {viewType == ViewType.Grid ? (
+                      <>
+                        <LayoutList />
+                        <p>List View</p>
+                      </>
+                    ) : (
+                      <>
+                        <LayoutGrid />
+                        <p>Grid View</p>
+                      </>
+                    )}
+                  </Button>
+                  <SearchBar search={search} setSearch={setSearch} />
+                </div>
+              )}
+              {isDetail ? (
+                <SummaryDetails session={sessionShown[cardClicked]} />
+              ) : (
+                // display sessions list
+                <div
+                  className={`py-5 grid ${viewType == ViewType.Grid ? "grid-cols-3 gap-10" : "grid-cols-1 gap-8"}`}
+                >
+                  {sessionShown.map((item, i) => (
+                    <span key={i} onClick={() => setCardClicked(i)}>
+                      <SessionCard session={item} setIsDetail={setIsDetail} />
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </Suspense>
   );
 }

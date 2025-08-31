@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -72,58 +72,66 @@ export default function SessionPage() {
   }, []);
 
   return (
-    <div className="px-20 py-10 space-y-10">
-      <h1 className="text-3xl font-bold">{topicTitle}</h1>
-      <div className="flex gap-10 py-10">
-        {/* duck animation */}
-        <div
-          className={`w-70 h-70 rounded-full bg-white border-4 ${isTalking ? "border-green-600" : "border-transparent"}`}
-        >
-          <Image
-            src={ANIMATION_FRAMES[currAnim][frame]}
-            className="w-60 h-60 [image-rendering:pixelated]"
-            alt={"Duck Animation"}
-          />
-        </div>
-        <div>
-          <p className="text-xl font-bold">
-            Elapsed: {Math.round(time / 60)}:{time % 60 < 10 ? 0 : ""}
-            {time % 60}
-          </p>
-          <ul className="space-y-5 py-5">
-            <FeedbackItem correct={true} content="Lorem ipsum dolor sit amet" />
-            <FeedbackItem correct={true} content="Lorem ipsum dolor sit amet" />
-            <FeedbackItem
-              correct={false}
-              content="Lorem ipsum dolor sit amet"
+    <Suspense>
+      <div className="px-20 py-10 space-y-10">
+        <h1 className="text-3xl font-bold">{topicTitle}</h1>
+        <div className="flex gap-10 py-10">
+          {/* duck animation */}
+          <div
+            className={`w-70 h-70 rounded-full bg-white border-4 ${isTalking ? "border-green-600" : "border-transparent"}`}
+          >
+            <Image
+              src={ANIMATION_FRAMES[currAnim][frame]}
+              className="w-60 h-60 [image-rendering:pixelated]"
+              alt={"Duck Animation"}
             />
-          </ul>
+          </div>
+          <div>
+            <p className="text-xl font-bold">
+              Elapsed: {Math.round(time / 60)}:{time % 60 < 10 ? 0 : ""}
+              {time % 60}
+            </p>
+            <ul className="space-y-5 py-5">
+              <FeedbackItem
+                correct={true}
+                content="Lorem ipsum dolor sit amet"
+              />
+              <FeedbackItem
+                correct={true}
+                content="Lorem ipsum dolor sit amet"
+              />
+              <FeedbackItem
+                correct={false}
+                content="Lorem ipsum dolor sit amet"
+              />
+            </ul>
+          </div>
         </div>
+        {/* TODO */}
+        <Button
+          onClick={() => {
+            setIsTalking(isTalking ? false : true);
+            handlePlay();
+          }}
+        >
+          Stop Duck (testing)
+        </Button>
+        <p className="italic">
+          “(Live captions) Lorem ipsum dolor sit amet, consectetur adipiscing
+          elit, sed do eiusmod tempor incididunt ut labore et dolore magna
+          aliqua.”
+        </p>
+        {/* redirect to summary page */}
+        {/* TODO: topicId */}
+        <Link
+          // href={`/topics/${topicId}?detail=true`}
+          href={"/topics/?details=true"}
+          className={`w-full py-6 [&>svg]:!w-5 [&>svg]:!h-5 text-lg ${buttonVariants({ variant: "destructive" })}`}
+        >
+          <StopCircle />
+          Stop
+        </Link>
       </div>
-      {/* TODO */}
-      <Button
-        onClick={() => {
-          setIsTalking(isTalking ? false : true);
-          handlePlay();
-        }}
-      >
-        Stop Duck (testing)
-      </Button>
-      <p className="italic">
-        “(Live captions) Lorem ipsum dolor sit amet, consectetur adipiscing
-        elit, sed do eiusmod tempor incididunt ut labore et dolore magna
-        aliqua.”
-      </p>
-      {/* redirect to summary page */}
-      {/* TODO: topicId */}
-      <Link
-        // href={`/topics/${topicId}?detail=true`}
-        href={"/topics/?details=true"}
-        className={`w-full py-6 [&>svg]:!w-5 [&>svg]:!h-5 text-lg ${buttonVariants({ variant: "destructive" })}`}
-      >
-        <StopCircle />
-        Stop
-      </Link>
-    </div>
+    </Suspense>
   );
 }
