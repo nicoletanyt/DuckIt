@@ -21,7 +21,6 @@ export default function SessionPage() {
   // for speech recog
   const {
     transcript,
-    listening,
     browserSupportsSpeechRecognition,
     isMicrophoneAvailable,
     browserSupportsContinuousListening
@@ -62,7 +61,12 @@ export default function SessionPage() {
   useEffect(() => {
     if (transcript && transcript.trim().length > 0) {
       setIsTalking(true);
-      const timeout = setTimeout(() => setIsTalking(false), 1500);
+      // const timeout = setTimeout(() => {setIsTalking(false)
+      // , 1500);
+      const timeout = setTimeout(() => {
+        setIsTalking(false);
+        handlePlay();
+      }, 1500);
       return () => clearTimeout(timeout);
     }
   }, [transcript]);
@@ -129,7 +133,7 @@ export default function SessionPage() {
       <div className="flex gap-10 py-10">
         {/* duck animation */}
         <div
-          className={`w-70 h-70 rounded-full bg-white border-4 ${listening ? "border-green-600" : "border-transparent"}`}
+          className={`w-70 h-70 rounded-full bg-white border-4 ${isTalking ? "border-green-600" : "border-transparent"}`}
         >
           <img
             className="w-60 h-60 [image-rendering:pixelated]"
