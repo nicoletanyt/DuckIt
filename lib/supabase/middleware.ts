@@ -1,6 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+const UNPROTECTED_ROUTES = ["/auth"];
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
@@ -33,10 +35,10 @@ export async function updateSession(request: NextRequest) {
   const user = data?.claims;
 
   if (
-    request.nextUrl.pathname !== "/" &&
     !user &&
-    !request.nextUrl.pathname.startsWith("/login") &&
-    !request.nextUrl.pathname.startsWith("/auth")
+    !UNPROTECTED_ROUTES.some((route) =>
+      request.nextUrl.pathname.startsWith(route),
+    )
   ) {
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";
