@@ -1,19 +1,19 @@
-import { cerebras } from '@ai-sdk/cerebras';
-import { generateText } from 'ai';
-import { NextRequest, NextResponse } from 'next/server';
+import { cerebras } from "@ai-sdk/cerebras";
+import { generateText } from "ai";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
     const { rawTranscription, previousGeneration } = await request.json();
 
-    if (!rawTranscription || typeof rawTranscription !== 'string') {
+    if (!rawTranscription || typeof rawTranscription !== "string") {
       return NextResponse.json(
-        { error: 'Raw transcription is required and must be a string' },
-        { status: 400 }
+        { error: "Raw transcription is required and must be a string" },
+        { status: 400 },
       );
     }
 
-    const model = cerebras('llama-3.3-70b');
+    const model = cerebras("llama-3.3-70b");
 
     // Build the prompt with context
     let prompt = `You are a transcription fixer. Your job is to take potentially messy, auto-transcribed text and convert it into clean, well-formatted markdown.
@@ -67,12 +67,11 @@ Please provide the fixed transcription as markdown. Reminder that PRESERVING THE
     return NextResponse.json({
       fixedText: result.text.trim(),
     });
-
   } catch (error) {
-    console.error('Error in fix-transcription API:', error);
+    console.error("Error in fix-transcription API:", error);
     return NextResponse.json(
-      { error: 'Failed to process transcription' },
-      { status: 500 }
+      { error: "Failed to process transcription" },
+      { status: 500 },
     );
   }
 }

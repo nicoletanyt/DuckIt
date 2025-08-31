@@ -1,10 +1,11 @@
-'use client'
+"use client";
 
-import React, { useState } from 'react';
-import MarkdownRenderer from '../../components/MarkdownRenderer';
+import React, { useState } from "react";
+import MarkdownRenderer from "../../components/MarkdownRenderer";
 
 const InteractiveMarkdownRenderer = () => {
-  const [markdownText, setMarkdownText] = useState(`# Markdown with Custom Highlights
+  const [markdownText, setMarkdownText] =
+    useState(`# Markdown with Custom Highlights
 
 This is a **bold** text and this is *italic* text.
 
@@ -78,11 +79,28 @@ You can also combine **bold** with ==red==highlighted red text==/red== for empha
         </div>
       </div>
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h3 className="font-semibold text-blue-800 mb-2">Highlighting Syntax:</h3>
+        <h3 className="font-semibold text-blue-800 mb-2">
+          Highlighting Syntax:
+        </h3>
         <div className="text-sm text-blue-700 space-y-1">
-          <div><code className="bg-white px-2 py-1 rounded">==red==text==//red==</code> → Red highlight</div>
-          <div><code className="bg-white px-2 py-1 rounded">==green==text==//green==</code> → Green highlight</div>
-          <div><code className="bg-white px-2 py-1 rounded">==yellow==text==//yellow==</code> → Yellow highlight</div>
+          <div>
+            <code className="bg-white px-2 py-1 rounded">
+              ==red==text==//red==
+            </code>{" "}
+            → Red highlight
+          </div>
+          <div>
+            <code className="bg-white px-2 py-1 rounded">
+              ==green==text==//green==
+            </code>{" "}
+            → Green highlight
+          </div>
+          <div>
+            <code className="bg-white px-2 py-1 rounded">
+              ==yellow==text==//yellow==
+            </code>{" "}
+            → Yellow highlight
+          </div>
         </div>
       </div>
     </div>

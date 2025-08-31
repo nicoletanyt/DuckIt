@@ -1,75 +1,82 @@
-import React from 'react';
+import React from "react";
 
 // Simple markdown parser for basic features
 const parseMarkdown = (text: string) => {
-  if (!text) return '';
+  if (!text) return "";
   // ...existing code...
   // Split into lines for processing
-  const lines = text.split('\n');
+  const lines = text.split("\n");
   const result: string[] = [];
   let inUnorderedList = false;
   let inOrderedList = false;
   for (let i = 0; i < lines.length; i++) {
-    let line = lines[i];
+    const line = lines[i];
     // Check for list items
     const unorderedMatch = line.match(/^(\s*)[-*]\s+(.+)$/);
     const orderedMatch = line.match(/^(\s*)\d+\.\s+(.+)$/);
     if (unorderedMatch) {
       if (!inUnorderedList) {
-        result.push('<ul>');
+        result.push("<ul>");
         inUnorderedList = true;
       }
       if (inOrderedList) {
-        result.push('</ol>');
+        result.push("</ol>");
         inOrderedList = false;
       }
       result.push(`<li>${unorderedMatch[2]}</li>`);
     } else if (orderedMatch) {
       if (!inOrderedList) {
-        result.push('<ol>');
+        result.push("<ol>");
         inOrderedList = true;
       }
       if (inUnorderedList) {
-        result.push('</ul>');
+        result.push("</ul>");
         inUnorderedList = false;
       }
       result.push(`<li>${orderedMatch[2]}</li>`);
     } else {
       // Close any open lists
       if (inUnorderedList) {
-        result.push('</ul>');
+        result.push("</ul>");
         inUnorderedList = false;
       }
       if (inOrderedList) {
-        result.push('</ol>');
+        result.push("</ol>");
         inOrderedList = false;
       }
       // Process regular line
-      if (line.trim() === '') {
-        result.push('<br />');
+      if (line.trim() === "") {
+        result.push("<br />");
       } else {
         result.push(line);
       }
     }
   }
   // Close any remaining open lists
-  if (inUnorderedList) result.push('</ul>');
-  if (inOrderedList) result.push('</ol>');
+  if (inUnorderedList) result.push("</ul>");
+  if (inOrderedList) result.push("</ol>");
   // Join and apply other markdown formatting
-  let html = result.join('\n')
+  const html = result
+    .join("\n")
     // Headers
-    .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-    .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-    .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+    .replace(/^### (.*$)/gm, "<h3>$1</h3>")
+    .replace(/^## (.*$)/gm, "<h2>$1</h2>")
+    .replace(/^# (.*$)/gm, "<h1>$1</h1>")
     // Bold and italic
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.*?)\*/g, "<em>$1</em>")
     // Code
-    .replace(/`(.*?)`/g, '<code>$1</code>')
+    .replace(/`(.*?)`/g, "<code>$1</code>")
     // Custom highlights
     .replace(/==red==(.*?)==\/red==/g, '<span class="highlight-red">$1</span>')
-    .replace(/==green==(.*?)==\/green==/g, '<span class="highlight-green">$1</span>')
-    .replace(/==yellow==(.*?)==\/yellow==/g, '<span class="highlight-yellow">$1</span>');
+    .replace(
+      /==green==(.*?)==\/green==/g,
+      '<span class="highlight-green">$1</span>',
+    )
+    .replace(
+      /==yellow==(.*?)==\/yellow==/g,
+      '<span class="highlight-yellow">$1</span>',
+    );
   return html;
 };
 
@@ -77,10 +84,12 @@ interface MarkdownRendererProps {
   markdownText: string;
 }
 
-const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ markdownText }) => {
+const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
+  markdownText,
+}) => {
   return (
     <>
-    <style>{`
+      <style>{`
         .highlight-red {
           background-color: #fee2e2;
           color: #dc2626;
