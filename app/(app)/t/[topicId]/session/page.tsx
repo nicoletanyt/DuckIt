@@ -100,14 +100,6 @@ export default function SessionPage({
   }, []);
 
   // for recording
-  const startRecording = async () => {
-    console.log("recording started");
-    if (browserSupportsContinuousListening) {
-      await SpeechRecognition.startListening({ continuous: true });
-    } else {
-      await SpeechRecognition.startListening();
-    }
-  }
 
   const stopRecording = async () => {
     console.log("recording ended");
@@ -117,8 +109,16 @@ export default function SessionPage({
   }
 
   useEffect(() => {
+    const startRecording = async () => {
+      console.log("recording started");
+      if (browserSupportsContinuousListening) {
+        await SpeechRecognition.startListening({ continuous: true });
+      } else {
+        await SpeechRecognition.startListening();
+      }
+    };
     startRecording();
-  }, []);
+  }, [browserSupportsContinuousListening]);
 
   if (!browserSupportsSpeechRecognition) {
     return (
