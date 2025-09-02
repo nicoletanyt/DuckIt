@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef, Suspense, use } from "react";
-import { useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { useSearchParams, redirect } from "next/navigation";
 import Image from "next/image";
 
 // import icons
@@ -13,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { AnimationTypes, ANIMATION_FRAMES } from "@/lib/Animation";
 import { buttonVariants } from "@/components/ui/button";
 import FeedbackItem from "@/components/feedback-item";
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
 // for audio
 import { Howl } from "howler";
@@ -23,20 +23,29 @@ export default function SessionPage({
   params: Promise<{ topicId: string }>;
 }) {
   const { topicId } = use(params);
+
+  // for speech recog
+  const {
+    transcript,
+    browserSupportsSpeechRecognition,
+    isMicrophoneAvailable,
+    browserSupportsContinuousListening
+  } = useSpeechRecognition();
+
   // for animation
   const [frame, setFrame] = useState(0);
   const ANIMATION_SPEED = 100;
   const currAnim = AnimationTypes.WalkNormal;
 
   // used for the talking border circle
-  const [isTalking, setIsTalking] = useState(true);
+  const [isTalking, setIsTalking] = useState(false);
 
   // get data
   const searchParams = useSearchParams();
   const topicTitle = searchParams.get("topic");
 
   // handle the time
-  const [time, setTime] = useState(0);
+  const [time, setTime] = useState(3);
 
   const soundRef = useRef<Howl | null>(null);
 
@@ -51,6 +60,20 @@ export default function SessionPage({
   const handlePlay = () => {
     soundRef.current?.play();
   };
+
+  // set to not talking if user stops talking after 1.5sec
+  useEffect(() => {
+    if (transcript && transcript.trim().length > 0) {
+      setIsTalking(true);
+      // const timeout = setTimeout(() => {setIsTalking(false)
+      // , 1500);
+      const timeout = setTimeout(() => {
+        setIsTalking(false);
+        handlePlay();
+      }, 1500);
+      return () => clearTimeout(timeout);
+    }
+  }, [transcript]);
 
   // animation
   useEffect(() => {
@@ -76,6 +99,38 @@ export default function SessionPage({
     return () => clearInterval(interval);
   }, []);
 
+  // for recording
+
+  const stopRecording = async () => {
+    console.log("recording ended");
+    await SpeechRecognition.stopListening()
+          // href={`/t/${topicId}?detail=true`}
+    redirect(`/t/${topicId}?detail=true`) 
+  }
+
+  useEffect(() => {
+    const startRecording = async () => {
+      console.log("recording started");
+      if (browserSupportsContinuousListening) {
+        await SpeechRecognition.startListening({ continuous: true });
+      } else {
+        await SpeechRecognition.startListening();
+      }
+    };
+    startRecording();
+  }, [browserSupportsContinuousListening]);
+
+  if (!browserSupportsSpeechRecognition) {
+    return (
+      <span>browser does not support speech recognition</span>
+    );
+  }
+
+  if (!isMicrophoneAvailable) {
+    return (
+      <span>microphone is not available</span>
+    );
+  }
   return (
     <Suspense>
       <div className="px-20 py-10 space-y-10">
@@ -115,28 +170,19 @@ export default function SessionPage({
           </div>
         </div>
         {/* TODO */}
-        <Button
-          onClick={() => {
-            setIsTalking(isTalking ? false : true);
-            handlePlay();
-          }}
-        >
-          Stop Duck (testing)
-        </Button>
         <p className="italic">
-          “(Live captions) Lorem ipsum dolor sit amet, consectetur adipiscing
-          elit, sed do eiusmod tempor incididunt ut labore et dolore magna
-          aliqua.”
+          {transcript}
         </p>
         {/* redirect to summary page */}
         {/* TODO: topicId */}
-        <Link
-          href={`/t/${topicId}?detail=true`}
+        <Button
+          // href={`/t/${topicId}?detail=true`}
+          onClick={stopRecording}
           className={`w-full py-6 [&>svg]:!w-5 [&>svg]:!h-5 text-lg ${buttonVariants({ variant: "destructive" })}`}
         >
           <StopCircle />
           Stop
-        </Link>
+        </Button>
       </div>
     </Suspense>
   );
