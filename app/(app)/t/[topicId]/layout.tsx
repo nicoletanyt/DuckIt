@@ -20,15 +20,18 @@ export default function TopicLayout({
   useEffect(() => {
     const fetchTopicTitle = async () => {
       const supabase = createClient();
-      const { data: topicName } = await supabase.from("topics").select("topic_title").eq("id", topicId).single();
+      const { data: topicName } = await supabase
+        .from("topics")
+        .select("topic_title")
+        .eq("id", topicId)
+        .single();
       setTopicTitle(topicName?.topic_title || "Error retrieving topic.");
     };
 
     fetchTopicTitle();
   }, [topicId]);
 
-
-  const isSessionsPage = pathname?.includes('/sessions');
+  const isSessionsPage = pathname?.includes("/sessions");
   const defaultTab = isSessionsPage ? "summary" : "session";
 
   return (
@@ -49,13 +52,11 @@ export default function TopicLayout({
               value="summary"
               className="dark:data-[state=active]:text-white"
             >
-              Summary
+              Past Sessions
             </TabsTrigger>
           </Link>
         </TabsList>
-        <TabsContent value={defaultTab}>
-          {children}
-        </TabsContent>
+        <TabsContent value={defaultTab}>{children}</TabsContent>
       </Tabs>
     </div>
   );
