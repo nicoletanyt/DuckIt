@@ -12,7 +12,9 @@ import { Button } from "@/components/ui/button";
 import { AnimationTypes, ANIMATION_FRAMES } from "@/lib/Animation";
 import { buttonVariants } from "@/components/ui/button";
 import FeedbackItem from "@/components/feedback-item";
-import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from "react-speech-recognition";
 
 // for audio
 import { Howl } from "howler";
@@ -29,7 +31,7 @@ export default function SessionPage({
     transcript,
     browserSupportsSpeechRecognition,
     isMicrophoneAvailable,
-    browserSupportsContinuousListening
+    browserSupportsContinuousListening,
   } = useSpeechRecognition();
 
   // for animation
@@ -103,10 +105,10 @@ export default function SessionPage({
 
   const stopRecording = async () => {
     console.log("recording ended");
-    await SpeechRecognition.stopListening()
-          // href={`/t/${topicId}?detail=true`}
-    redirect(`/t/${topicId}?detail=true`) 
-  }
+    await SpeechRecognition.stopListening();
+    // href={`/t/${topicId}?detail=true`}
+    redirect(`/t/${topicId}?detail=true`);
+  };
 
   useEffect(() => {
     const startRecording = async () => {
@@ -121,15 +123,11 @@ export default function SessionPage({
   }, [browserSupportsContinuousListening]);
 
   if (!browserSupportsSpeechRecognition) {
-    return (
-      <span>browser does not support speech recognition</span>
-    );
+    return <span>browser does not support speech recognition</span>;
   }
 
   if (!isMicrophoneAvailable) {
-    return (
-      <span>microphone is not available</span>
-    );
+    return <span>microphone is not available</span>;
   }
   return (
     <Suspense>
@@ -170,9 +168,7 @@ export default function SessionPage({
           </div>
         </div>
         {/* TODO */}
-        <p className="italic">
-          {transcript}
-        </p>
+        <p className="italic">{transcript}</p>
         {/* redirect to summary page */}
         {/* TODO: topicId */}
         <Button
