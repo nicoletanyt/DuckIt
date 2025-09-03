@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, use, useEffect, useRef, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams, redirect } from "next/navigation";
 import "@/app/globals.css";
 
 // import interfaces
@@ -122,8 +122,6 @@ export default function TopicDetailedPage({
   // const topicTitle = searchParams.get("title");
   const topicTitle = "Data Science";
 
-  const router = useRouter();
-
   // to set if the summary tab is showing the detail or list
   const [isDetail, setIsDetail] = useState(details ? Boolean(details) : false);
   const [cardClicked, setCardClicked] = useState(0);
@@ -182,7 +180,7 @@ export default function TopicDetailedPage({
     // TODO: CHANGE THE ROUTE
 
     // navigate
-    router.push(
+    redirect(
       `/t/${topicId}/session?sessionId=${sessionId}&topic=${encodeURIComponent(
         topicTitle,
       )}`,

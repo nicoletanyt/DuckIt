@@ -51,7 +51,7 @@ export default function SessionPage({
   const topicTitle = searchParams.get("topic");
 
   // handle the time
-  const [time, setTime] = useState(3);
+  const [time, setTime] = useState(0);
 
   const soundRef = useRef<Howl | null>(null);
 
@@ -75,7 +75,6 @@ export default function SessionPage({
         };
         newFiles.push(temp);
       });
-      console.log(newFiles);
       setFiles(newFiles);
     }
   }, []);
