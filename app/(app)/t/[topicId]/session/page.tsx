@@ -26,6 +26,9 @@ export default function SessionPage({
 }) {
   const { topicId } = use(params);
 
+  // TODO: create new session instance (with the updated files) and store it in the database
+  const files = localStorage.getItem("DuckIt_Session_Files");
+
   // for speech recog
   const {
     transcript,

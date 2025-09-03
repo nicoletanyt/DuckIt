@@ -21,7 +21,7 @@ export default function SummaryDetails({ session }: { session: Session }) {
       {/* list of files */}
       <div className="grid gap-4">
         {session.files.map((item, i) => (
-          <FileItem key={i} fileName={item} />
+          <FileItem key={i} fileName={item.name} />
         ))}
       </div>
 

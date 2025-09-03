@@ -28,7 +28,7 @@ export default function SessionCard({
       <CardContent className="space-y-3">
         {/* list of files */}
         {session.files.map((item, i) => (
-          <FileItem key={i} fileName={item} />
+          <FileItem key={i} fileName={item.name} />
         ))}
       </CardContent>
       <CardFooter className="justify-center items-end">
