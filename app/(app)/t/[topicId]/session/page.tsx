@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef, Suspense, use } from "react";
 import { useSearchParams, redirect } from "next/navigation";
 import Image from "next/image";
+import { TextFile } from "@/lib/TextFile";
 
 // import icons
 import { StopCircle } from "lucide-react";
@@ -27,7 +28,7 @@ export default function SessionPage({
   const { topicId } = use(params);
 
   // TODO: create new session instance (with the updated files) and store it in the database
-  const files = localStorage.getItem("DuckIt_Session_Files");
+  const [files, setFiles] = useState<TextFile[]>([]);
 
   // for speech recog
   const {
@@ -55,10 +56,28 @@ export default function SessionPage({
   const soundRef = useRef<Howl | null>(null);
 
   useEffect(() => {
+    // play sound
     soundRef.current = new Howl({
       src: ["/sound/quack.mp3"],
-      preload: true, // important
+      preload: true,
     });
+
+    // get the files from local storage
+    const ls = localStorage.getItem("DuckIt_Session_Files");
+    if (ls) {
+      // parse value
+      let raw = JSON.parse(ls);
+      let newFiles: TextFile[] = [];
+      raw.forEach((file: string) => {
+        const temp: TextFile = {
+          name: file.split("\n")[0],
+          content: file.split("\n")[1],
+        };
+        newFiles.push(temp);
+      });
+      console.log(newFiles);
+      setFiles(newFiles);
+    }
   }, []);
 
   // handle audio

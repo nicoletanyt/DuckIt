@@ -38,6 +38,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { FaGoogleDrive } from "react-icons/fa";
+import { TextFile } from "@/lib/TextFile";
 
 const TEST_SUMMARY: Summary = {
   id: "0",
@@ -49,16 +50,15 @@ const TEST_SUMMARY: Summary = {
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ",
 };
 
-const TEST_FILES: File[] = [
-  new File(["this is another filee"], "notes.txt", {
-    type: "text/plain",
-  }),
-  new File(["more notes notes"], "more_notes.txt", {
-    type: "text/plain",
-  }),
-  new File(["live laugh love math"], "math.txt", {
-    type: "text/plain",
-  }),
+const TEST_FILES: TextFile[] = [
+  {
+    name: "notes.txt",
+    content: "this is another file",
+  },
+  {
+    name: "more_notes.txt",
+    content: "more notes notes",
+  },
 ];
 
 const TEST_SESSIONS: Session[] = [
@@ -161,16 +161,23 @@ export default function TopicDetailedPage({
     return 0;
   };
 
-  const handleNavigation = () => {
+  const handleNavigation = async () => {
     const sessionId = createNewSession();
 
     // save the files
-    const newFile: File = new File([customContent], "math.txt", {
-      type: "text/plain",
-    });
+    const newFile: TextFile = {
+      name: "custom_input.txt",
+      content: customContent,
+    };
     const files = topic.files.concat(newFile);
+    let parsed: string[] = [];
+
+    files.forEach((element) => {
+      parsed.push(element.name + "\n" + element.content);
+    });
+
     // save files to local storage so they can be retrieved in session recording
-    localStorage.setItem("DuckIt_Session_Files", JSON.stringify(files));
+    localStorage.setItem("DuckIt_Session_Files", JSON.stringify(parsed));
 
     // TODO: CHANGE THE ROUTE
 
