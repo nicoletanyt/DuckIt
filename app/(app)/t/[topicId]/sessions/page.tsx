@@ -1,11 +1,7 @@
-import { use } from "react";
 import { createClient } from "@/lib/supabase/server";
-import { Tables } from "@/database.types";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus, Clock } from "lucide-react";
-
-type Session = Tables<"sessions">;
 
 export default async function SessionsPage({
   params,

@@ -1,9 +1,8 @@
 "use client";
 
-import { Suspense, use, useState, useEffect, useRef, useCallback } from "react";
+import { use, useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,7 +10,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { buttonVariants } from "@/components/ui/button";
 import FileItem from "@/components/file-item";
 import FeedbackItem from "@/components/feedback-item";
 import {
@@ -52,10 +50,8 @@ export default function TopicDetailedPage({
   const {
     transcript,
     listening,
-    interimTranscript,
+    resetTranscript,
     browserSupportsSpeechRecognition,
-    isMicrophoneAvailable,
-    browserSupportsContinuousListening,
   } = useSpeechRecognition();
 
   // Recording state
@@ -87,7 +83,7 @@ export default function TopicDetailedPage({
   // Handle talking detection
   useEffect(() => {
     if (!recordingState.isRecording) return;
-    console.log(transcript, listening, interimTranscript);
+    console.log("Transcript:", transcript, "Listening:", listening);
 
     if (transcript && transcript.trim().length > 0) {
       setRecordingState((prev) => ({ ...prev, isTalking: true }));
@@ -147,51 +143,52 @@ export default function TopicDetailedPage({
     };
   }, [recordingState.isRecording]);
 
-  // Start recording
-  const startRecording = useCallback(async () => {
-    if (!browserSupportsSpeechRecognition || !isMicrophoneAvailable) return;
+  // Start recording - simplified approach
+  const startRecording = useCallback(() => {
+    console.log("Starting recording...");
 
-    try {
-      setRecordingState((prev) => ({
-        ...prev,
-        isRecording: true,
-        time: 0,
-        frame: 3,
-      }));
-
-      if (browserSupportsContinuousListening) {
-        await SpeechRecognition.startListening({ continuous: true });
-        console.log("listening started");
-      } else {
-        await SpeechRecognition.startListening();
-      }
-    } catch (error) {
-      console.error("Failed to start recording:", error);
-      setRecordingState((prev) => ({ ...prev, isRecording: false }));
+    if (!browserSupportsSpeechRecognition) {
+      alert("Browser doesn't support speech recognition.");
+      return;
     }
-  }, [
-    browserSupportsSpeechRecognition,
-    isMicrophoneAvailable,
-    browserSupportsContinuousListening,
-  ]);
+
+    // Reset transcript and start fresh
+    resetTranscript();
+
+    setRecordingState((prev) => ({
+      ...prev,
+      isRecording: true,
+      time: 0,
+      frame: 3,
+      isTalking: false,
+    }));
+
+    // Start listening with continuous mode
+    SpeechRecognition.startListening({
+      continuous: true,
+      language: "en-US",
+    });
+
+    console.log("Speech recognition started");
+  }, [browserSupportsSpeechRecognition, resetTranscript]);
 
   // Stop recording
-  const stopRecording = useCallback(async () => {
-    try {
-      await SpeechRecognition.stopListening();
-      setRecordingState((prev) => ({ ...prev, isRecording: false }));
+  const stopRecording = useCallback(() => {
+    console.log("Stopping recording...");
 
-      // Clean up timeouts
-      if (talkingTimeoutRef.current) {
-        clearTimeout(talkingTimeoutRef.current);
-      }
+    SpeechRecognition.stopListening();
+    setRecordingState((prev) => ({ ...prev, isRecording: false }));
 
-      // Redirect to sessions page
-      router.push(`/t/${topicId}/sessions`);
-    } catch (error) {
-      console.error("Failed to stop recording:", error);
+    // Clean up timeouts
+    if (talkingTimeoutRef.current) {
+      clearTimeout(talkingTimeoutRef.current);
     }
-  }, [router, topicId]);
+
+    console.log("Final transcript:", transcript);
+
+    // Redirect to sessions page
+    router.push(`/t/${topicId}/sessions`);
+  }, [router, topicId, transcript]);
 
   const formatTime = useCallback((seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -199,24 +196,20 @@ export default function TopicDetailedPage({
     return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
   }, []);
 
-  // if (!browserSupportsSpeechRecognition) {
-  //   return (
-  //     <div className="text-center text-red-600">
-  //       Browser does not support speech recognition
-  //     </div>
-  //   );
-  // }
-
-  if (!isMicrophoneAvailable) {
+  // Show error if browser doesn't support speech recognition
+  if (!browserSupportsSpeechRecognition) {
     return (
       <div className="text-center text-red-600">
-        Microphone is not available
+        <h2>Browser Not Supported</h2>
+        <p>
+          Browser doesn&apos;t support speech recognition. Please use Chrome,
+          Edge, or Safari.
+        </p>
       </div>
     );
   }
 
   return (
-    // <Suspense fallback={<div>Loading...</div>}>
     <div className="space-y-8">
       {recordingState.isRecording ? (
         // Recording View
@@ -227,7 +220,9 @@ export default function TopicDetailedPage({
               className={`w-70 h-70 rounded-full bg-white border-4 transition-colors duration-200 ${
                 recordingState.isTalking
                   ? "border-green-600"
-                  : "border-transparent"
+                  : listening
+                    ? "border-blue-500"
+                    : "border-red-500"
               }`}
             >
               <Image
@@ -249,6 +244,9 @@ export default function TopicDetailedPage({
               <p className="text-xl font-bold mb-4">
                 Elapsed: {formatTime(recordingState.time)}
               </p>
+              <p className="text-sm mb-4 text-gray-600">
+                Microphone: {listening ? "🎤 ON" : "❌ OFF"}
+              </p>
               <ul className="space-y-5">
                 <FeedbackItem
                   correct={true}
@@ -265,14 +263,20 @@ export default function TopicDetailedPage({
               </ul>
             </div>
           </div>
-
+          {/* Colours */}
           {/* Transcript */}
-          {transcript && (
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h3 className="font-medium mb-2">Transcript:</h3>
-              <p className="italic text-gray-700">{transcript}</p>
-            </div>
-          )}
+          <div className="bg-gray-50 p-4 rounded-lg min-h-[120px]">
+            <h3 className="font-medium mb-2">Transcript:</h3>
+            <p className="italic text-gray-700">
+              {transcript || "Start speaking to see your transcript here..."}
+            </p>
+          </div>
+
+          {/* Debug Info */}
+          <div className="text-sm text-gray-500">
+            <p>Listening: {listening ? "Yes" : "No"}</p>
+            <p>Transcript length: {transcript.length} characters</p>
+          </div>
 
           {/* Stop Button */}
           <Button
@@ -293,7 +297,7 @@ export default function TopicDetailedPage({
           <div className="flex justify-center">
             <button
               onClick={startRecording}
-              className="bg-white rounded-full p-10 hover:bg-gray-50 transition-colors"
+              className="bg-white rounded-full p-10 hover:bg-gray-50 transition-colors shadow-lg"
               aria-label="Start Recording"
             >
               <Mic color="#0F172A" size={50} strokeWidth={2} />
@@ -338,7 +342,4 @@ export default function TopicDetailedPage({
       )}
     </div>
   );
-  {
-    /* </Suspense> */
-  }
 }
