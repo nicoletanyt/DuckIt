@@ -18,13 +18,16 @@ import {
   MonitorSmartphone,
   Trash2,
   StopCircle,
+  Play,
 } from "lucide-react";
-import { FaGoogleDrive } from "react-icons/fa";
+import { FaGoogleDrive, FaStop, FaPlay } from "react-icons/fa";
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
 import { Howl } from "howler";
 import { AnimationTypes, ANIMATION_FRAMES } from "@/lib/Animation";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 const TEST_FILES = ["notes.txt", "math.txt", "notes++.txt"];
 const ANIMATION_SPEED = 100;
@@ -56,7 +59,7 @@ export default function TopicDetailedPage({
   const [recordingState, setRecordingState] = useState<RecordingState>({
     isRecording: false,
     time: 0,
-    isTalking: true,
+    isTalking: false,
     frame: 3,
   });
 
@@ -168,7 +171,7 @@ export default function TopicDetailedPage({
     console.log("Stopping recording...");
 
     SpeechRecognition.stopListening();
-    setRecordingState((prev) => ({ ...prev, isRecording: false }));
+    setRecordingState((prev) => ({ ...prev, isRecording: false, time: 0, isTalking: false, frame: 3 }));
 
     if (talkingTimeoutRef.current) {
       clearTimeout(talkingTimeoutRef.current);
@@ -176,7 +179,7 @@ export default function TopicDetailedPage({
 
     console.log("Final transcript:", transcript);
 
-    router.push(`/t/${topicId}/sessions`);
+    // router.push(`/t/${topicId}/sessions`);
   }, [router, topicId, transcript]);
 
   const formatTime = useCallback((seconds: number) => {
@@ -186,141 +189,121 @@ export default function TopicDetailedPage({
   }, []);
 
   // Show error if browser doesn't support speech recognition
-  if (!browserSupportsSpeechRecognition) {
-    return (
-      <div className="text-center text-red-600">
-        <h2>Browser Not Supported</h2>
-        <p>
-          Browser doesn&apos;t support speech recognition. Please use Chrome,
-          Edge, or Safari.
-        </p>
-      </div>
-    );
-  }
+  // if (!browserSupportsSpeechRecognition) {
+  //   return (
+  //     <div className="text-center text-red-600">
+  //       <h2>Browser Not Supported</h2>
+  //       <p>
+  //         Browser doesn&apos;t support speech recognition. Please use Chrome,
+  //         Edge, or Safari.
+  //       </p>
+  //     </div>
+  //   );
+  // }
 
   return (
-    <div className="space-y-8">
-      {recordingState.isRecording ? (
-        <div className="w-full flex items-center justify-center flex-col">
-          <div className="flex flex-col gap-10 py-10">
-            <div
-              className={`w-70 h-70 rounded-full bg-white border-4 transition-colors duration-200 ${
-                recordingState.isTalking
-                  ? "border-green-600"
-                  : listening
-                    ? "border-yellow-600"
-                    : "border-red-500"
-              }`}
-            >
-              <Image
-                src={
-                  ANIMATION_FRAMES[AnimationTypes.WalkNormal][
-                    recordingState.frame
-                  ]
-                }
-                width={240}
-                height={240}
-                className="w-60 h-60 [image-rendering:pixelated]"
-                alt="Duck Animation"
-                priority
-              />
-            </div>
+    <div className="flex space-y-8 items-center flex-col w-full max-w-[1600px]">
+      <div
+        className={`w-70 h-70 rounded-full bg-background border-4 transition-colors duration-200 ${
+          recordingState.isTalking
+            ? "border-green-600"
+            : listening
+              ? "border-yellow-600"
+              : "border-red-500"
+        }`}
+      >
+        <Image
+          src={
+            ANIMATION_FRAMES[AnimationTypes.WalkNormal][recordingState.frame]
+          }
+          width={240}
+          height={240}
+          className="w-60 h-60 [image-rendering:pixelated]"
+          alt="Duck Animation"
+          priority
+        />
+      </div>
 
-            {/* Recording Info */}
-            <div className="flex-1">
-              <p className="text-xl font-bold mb-4">
-                Elapsed: {formatTime(recordingState.time)}
-              </p>
-              <p className="text-sm mb-4 text-neutral-300">
-                Microphone: {listening ? "🎤 ON" : "❌ OFF"}
-              </p>
-              <ul className="space-y-5">
-                <FeedbackItem
-                  correct={true}
-                  content="Lorem ipsum dolor sit amet"
-                />
-                <FeedbackItem
-                  correct={true}
-                  content="Lorem ipsum dolor sit amet"
-                />
-                <FeedbackItem
-                  correct={false}
-                  content="Lorem ipsum dolor sit amet"
-                />
-              </ul>
-            </div>
-          </div>
+      <p className="text-4xl font-bold mb-4">
+        {formatTime(recordingState.time)}
+      </p>
 
-          {/* Transcript */}
-          <div className="bg-neutral-800 p-4 rounded-lg min-h-[120px]">
-            <h3 className="font-medium mb-2">Transcript:</h3>
+      <Button
+        className="bg-[#ffc300] hover:bg-[#e6b800] w-64 h-16 text-lg rounded-2xl !transition-all"
+        onClick={recordingState.isRecording ? stopRecording : startRecording}
+      >
+        {recordingState.isRecording ? (
+          <FaStop fill="#000" className="!size-14" size={30} />
+        ) : (
+          <FaPlay fill="#000" className="!size-14" size={30} />
+        )}
+        {recordingState.isRecording ? "End session" : "Start a new session"}
+      </Button>
+
+      <hr className="w-full border-t-[0.5px] border-border my-8" />
+
+      <div className="w-full max-w-[1600px]">
+        {recordingState.isRecording ? (
+          <div className="bg-neutral-900 p-6 rounded-lg min-h-[120px] transition-all transition-discrete">
+            <h3 className="font-medium mb-2">Formatted Transcript</h3>
             <p className="italic">
               {transcript || "Start speaking to see your transcript here..."}
             </p>
           </div>
 
-          {/* Stop Button */}
-          <Button
-            onClick={stopRecording}
-            className="w-full py-6 text-lg"
-            variant="destructive"
-          >
-            <StopCircle className="w-5 h-5 mr-2" />
-            Stop Recording
-          </Button>
-        </div>
-      ) : (
-        // Default View
-        <>
-          <h1 className="text-center my-8">Start Recording</h1>
-
-          {/* Recording Button */}
-          <div className="flex justify-center">
-            <button
-              onClick={startRecording}
-              className="bg-white rounded-full p-10 hover:bg-gray-50 transition-colors shadow-lg"
-              aria-label="Start Recording"
-            >
-              <Mic color="#0F172A" size={50} strokeWidth={2} />
-            </button>
-          </div>
-
-          {/* Files Section */}
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Files</h2>
-            <div className="space-y-3">
-              {files.map((fileName, index) => (
-                <div key={index} className="flex justify-between items-center">
-                  <FileItem fileName={fileName} />
-                  <Button variant="secondary" size="sm">
-                    <Trash2 className="w-4 h-4" color="#FF383C" />
-                  </Button>
-                </div>
-              ))}
+        ) : (
+          // Default View
+          <div className="w-full grid grid-cols-2 gap-12 transition-all transition-discrete">
+            <div className="grid w-full gap-3 h-max">
+              <Label className="text-xl" htmlFor="prompt">
+                Your prompt
+              </Label>
+              <Textarea
+                className="!text-2xl mt-2"
+                placeholder="Type your content or special instructions here."
+                id="prompt"
+              />
+            </div>
+            {/* Files Section */}
+            <div>
+              <div className="flex justify-between">
+                <h2 className="text-xl font-semibold mb-4">Files</h2>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button>
+                      <Import className="w-4 h-4 mr-2" />
+                      Import
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem>
+                      <FaGoogleDrive className="w-4 h-4 mr-2" />
+                      Google Drive
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <MonitorSmartphone className="w-4 h-4 mr-2" />
+                      My Device
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+              <div className="mt-2 space-y-3">
+                {files.map((fileName, index) => (
+                  <div
+                    key={index}
+                    className="flex justify-between items-center"
+                  >
+                    <FileItem fileName={fileName} />
+                    <Button variant="secondary" size="sm">
+                      <Trash2 className="w-4 h-4" color="#FF383C" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-
-          {/* Import Button */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button>
-                <Import className="w-4 h-4 mr-2" />
-                Import
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem>
-                <FaGoogleDrive className="w-4 h-4 mr-2" />
-                Google Drive
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <MonitorSmartphone className="w-4 h-4 mr-2" />
-                My Device
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </>
-      )}
+        )}
+      </div>
     </div>
   );
 }
