@@ -11,7 +11,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import FileItem from "@/components/file-item";
-import { Import, MonitorSmartphone, Trash2 } from "lucide-react";
+import {
+  Import,
+  MonitorSmartphone,
+  Trash2,
+} from "lucide-react";
 import { FaGoogleDrive, FaStop, FaPlay } from "react-icons/fa";
 import SpeechRecognition, {
   useSpeechRecognition,
@@ -20,6 +24,8 @@ import { Howl } from "howler";
 import { AnimationTypes, ANIMATION_FRAMES } from "@/lib/Animation";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import TranscriptDisplay from "@/components/transcript";
+
 
 const TEST_FILES = ["notes.txt", "math.txt", "notes++.txt"];
 const ANIMATION_SPEED = 100;
@@ -162,13 +168,7 @@ export default function TopicDetailedPage({
     console.log("Stopping recording...");
 
     SpeechRecognition.stopListening();
-    setRecordingState((prev) => ({
-      ...prev,
-      isRecording: false,
-      time: 0,
-      isTalking: false,
-      frame: 3,
-    }));
+    setRecordingState((prev) => ({ ...prev, isRecording: false, time: 0, isTalking: false, frame: 3 }));
 
     if (talkingTimeoutRef.current) {
       clearTimeout(talkingTimeoutRef.current);
@@ -241,12 +241,7 @@ export default function TopicDetailedPage({
 
       <div className="w-full max-w-[1600px]">
         {recordingState.isRecording ? (
-          <div className="bg-neutral-900 p-6 rounded-lg min-h-[120px] transition-all transition-discrete">
-            <h3 className="font-medium mb-2">Formatted Transcript</h3>
-            <p className="italic">
-              {transcript || "Start speaking to see your transcript here..."}
-            </p>
-          </div>
+          <TranscriptDisplay transcript={transcript} />
         ) : (
           // Default View
           <div className="w-full grid grid-cols-2 gap-12 transition-all transition-discrete">
