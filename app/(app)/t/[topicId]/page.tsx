@@ -159,7 +159,6 @@ export default function TopicDetailedPage({
 
     SpeechRecognition.startListening({
       continuous: true,
-      language: "en-US",
     });
 
     console.log("Speech recognition started");
