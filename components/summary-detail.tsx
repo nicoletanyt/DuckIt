@@ -1,8 +1,5 @@
 import { Session } from "@/lib/Session";
-import FileItem from "./file-item";
 import FeedbackItem from "./feedback-item";
-import FileContentPopup from "./file-content-popup";
-import { useEffect, useState } from "react";
 
 export default function SummaryDetails({ session }: { session: Session }) {
   // filter into + and - feedback and remove the + and -
@@ -16,30 +13,10 @@ export default function SummaryDetails({ session }: { session: Session }) {
     .filter((i) => i.startsWith("(-)"))
     .map((i) => i.substring(3));
 
-  // set index of the file shown. if -1, then no file is being shown
-  const [fileShown, setFileShown] = useState(-1);
-
-  useEffect(() => {
-    if (fileShown > -1) {
-      document.body.classList.add("overflow-hidden");
-    }
-    return () => {
-      document.body.classList.remove("overflow-hidden");
-    };
-  }, [fileShown]);
-
   return (
     <div className="mt-10 space-y-8">
       <h2 className="text-2xl font-bold">{session.name}</h2>
       <p>Date: {session.date.toDateString()}</p>
-      {/* list of files */}
-      <div className="grid gap-4">
-        {session.files.map((item, i) => (
-          <div onClick={() => setFileShown(i)} key={i}>
-            <FileItem fileName={item.name} />
-          </div>
-        ))}
-      </div>
 
       <div className="flex justify-between">
         <div>
@@ -86,13 +63,6 @@ export default function SummaryDetails({ session }: { session: Session }) {
         {/* velit esse cillum dolore eu fugiat nulla pariatur. */}
         {session.summary.transcript}
       </p>
-
-      {fileShown >= 0 && (
-        <FileContentPopup
-          file={session.files[fileShown]}
-          setFileShown={setFileShown}
-        />
-      )}
     </div>
   );
 }

@@ -37,7 +37,6 @@ import {
 } from "lucide-react";
 import { FaGoogleDrive } from "react-icons/fa";
 import { TextFile } from "@/lib/TextFile";
-import FileContentPopup from "@/components/file-content-popup";
 
 const test_summary: Summary = {
   id: "0",
@@ -125,18 +124,6 @@ export default function TopicDetailedPage({
   const [isDetail, setIsDetail] = useState(details ? Boolean(details) : false);
   const [cardClicked, setCardClicked] = useState(0);
 
-  // show file popup
-  const [fileShown, setFileShown] = useState(-1);
-
-  useEffect(() => {
-    if (fileShown > -1) {
-      document.body.classList.add("overflow-hidden");
-    }
-    return () => {
-      document.body.classList.remove("overflow-hidden");
-    };
-  }, [fileShown]);
-
   useEffect(() => {
     if (search) {
       setSessionShown(
@@ -200,9 +187,7 @@ export default function TopicDetailedPage({
               <div>
                 {files.map((ele, i) => (
                   <div key={i} className="flex justify-between space-y-3">
-                    <div onClick={() => setFileShown(i)}>
-                      <FileItem fileName={ele.name} />
-                    </div>
+                    <FileItem fileName={ele.name} fileContent={ele.content} />
                     <Button variant="secondary" size="sm">
                       <Trash2 color="#FF383C" />
                     </Button>
@@ -278,14 +263,6 @@ export default function TopicDetailedPage({
             </div>
           </TabsContent>
         </Tabs>
-
-        {/* show file popup */}
-        {fileShown >= 0 && (
-          <FileContentPopup
-            file={files[fileShown]}
-            setFileShown={setFileShown}
-          />
-        )}
       </div>
     </Suspense>
   );
