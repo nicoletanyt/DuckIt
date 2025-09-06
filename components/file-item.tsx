@@ -2,7 +2,7 @@ import { FileText } from "lucide-react";
 
 export default function FileItem({ fileName }: { fileName: string }) {
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 cursor-pointer">
       <FileText />
       {fileName}
     </div>

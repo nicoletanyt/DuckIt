@@ -25,10 +25,10 @@ export default function SessionCard({
         <CardTitle>{session.name}</CardTitle>
         <CardDescription>Date: {session.date.toDateString()}</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-3 [&>*]:!cursor-default">
         {/* list of files */}
         {session.files.map((item, i) => (
-          <FileItem key={i} fileName={item} />
+          <FileItem key={i} fileName={item.name} />
         ))}
       </CardContent>
       <CardFooter className="justify-center items-end">

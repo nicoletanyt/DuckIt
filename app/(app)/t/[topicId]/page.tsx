@@ -36,6 +36,8 @@ import {
   Trash2,
 } from "lucide-react";
 import { FaGoogleDrive } from "react-icons/fa";
+import { TextFile } from "@/lib/TextFile";
+import FileContentPopup from "@/components/file-content-popup";
 
 const test_summary: Summary = {
   id: "0",
@@ -47,38 +49,53 @@ const test_summary: Summary = {
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ",
 };
 
+const TEST_FILES: TextFile[] = [
+  {
+    name: "math.txt",
+    content: ` Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+    Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+    Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+    Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+    Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+    Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+`,
+  },
+  {
+    name: "more math.txt",
+    content: "live laugh love math",
+  },
+];
+
 const TEST_SESSIONS: Session[] = [
   {
     id: "0",
     name: "Session 1",
     date: new Date(),
-    files: ["notes.txt", "math.txt", "more notes.txt"],
+    files: TEST_FILES,
     summary: test_summary,
   },
   {
     id: "1",
     name: "Session 2",
     date: new Date(),
-    files: ["math.txt", "more notes.txt"],
+    files: TEST_FILES,
     summary: test_summary,
   },
   {
     id: "2",
     name: "Session 3",
     date: new Date(),
-    files: ["notes.txt", "math.txt", "notes++.txt"],
+    files: TEST_FILES,
     summary: test_summary,
   },
   {
     id: "3",
     name: "Session 3",
     date: new Date(),
-    files: ["notes.txt", "math.txt", "notes++.txt"],
+    files: TEST_FILES,
     summary: test_summary,
   },
 ];
-
-const TEST_FILES = ["notes.txt", "math.txt", "notes++.txt"];
 
 export default function TopicDetailedPage({
   params,
@@ -107,6 +124,18 @@ export default function TopicDetailedPage({
   // to set if the summary tab is showing the detail or list
   const [isDetail, setIsDetail] = useState(details ? Boolean(details) : false);
   const [cardClicked, setCardClicked] = useState(0);
+
+  // show file popup
+  const [fileShown, setFileShown] = useState(-1);
+
+  useEffect(() => {
+    if (fileShown > -1) {
+      document.body.classList.add("overflow-hidden");
+    }
+    return () => {
+      document.body.classList.remove("overflow-hidden");
+    };
+  }, [fileShown]);
 
   useEffect(() => {
     if (search) {
@@ -171,7 +200,9 @@ export default function TopicDetailedPage({
               <div>
                 {files.map((ele, i) => (
                   <div key={i} className="flex justify-between space-y-3">
-                    <FileItem fileName={ele} />
+                    <div onClick={() => setFileShown(i)}>
+                      <FileItem fileName={ele.name} />
+                    </div>
                     <Button variant="secondary" size="sm">
                       <Trash2 color="#FF383C" />
                     </Button>
@@ -200,7 +231,7 @@ export default function TopicDetailedPage({
             </div>
           </TabsContent>
           <TabsContent value="summary">
-            <div className="my-5">
+            <div className="my-5 relative">
               {/* top bar */}
               {isDetail ? (
                 // return button
@@ -247,6 +278,14 @@ export default function TopicDetailedPage({
             </div>
           </TabsContent>
         </Tabs>
+
+        {/* show file popup */}
+        {fileShown >= 0 && (
+          <FileContentPopup
+            file={files[fileShown]}
+            setFileShown={setFileShown}
+          />
+        )}
       </div>
     </Suspense>
   );
