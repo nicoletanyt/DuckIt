@@ -28,7 +28,7 @@ import { AnimationTypes, ANIMATION_FRAMES } from "@/lib/Animation";
 
 const TEST_FILES = ["notes.txt", "math.txt", "notes++.txt"];
 const ANIMATION_SPEED = 100;
-const TALKING_TIMEOUT = 1500;
+const TALKING_TIMEOUT = 1000;
 
 interface RecordingState {
   isRecording: boolean;
@@ -46,7 +46,6 @@ export default function TopicDetailedPage({
   const router = useRouter();
   const files = TEST_FILES;
 
-  // Speech recognition
   const {
     transcript,
     listening,
@@ -54,15 +53,13 @@ export default function TopicDetailedPage({
     browserSupportsSpeechRecognition,
   } = useSpeechRecognition();
 
-  // Recording state
   const [recordingState, setRecordingState] = useState<RecordingState>({
     isRecording: false,
     time: 0,
     isTalking: true,
-    frame: 3, // Default non-moving frame
+    frame: 3,
   });
 
-  // Refs
   const soundRef = useRef<Howl | null>(null);
   const talkingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const animationIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -83,20 +80,17 @@ export default function TopicDetailedPage({
   // Handle talking detection
   useEffect(() => {
     if (!recordingState.isRecording) return;
-    console.log("Transcript:", transcript, "Listening:", listening);
 
     if (transcript && transcript.trim().length > 0) {
       setRecordingState((prev) => ({ ...prev, isTalking: true }));
 
-      // Clear existing timeout
       if (talkingTimeoutRef.current) {
         clearTimeout(talkingTimeoutRef.current);
       }
 
-      // Set new timeout
       talkingTimeoutRef.current = setTimeout(() => {
         setRecordingState((prev) => ({ ...prev, isTalking: false }));
-        soundRef.current?.play();
+        // soundRef.current?.play();
       }, TALKING_TIMEOUT);
     }
 
@@ -117,7 +111,7 @@ export default function TopicDetailedPage({
         frame: prev.isTalking
           ? (prev.frame + 1) %
             ANIMATION_FRAMES[AnimationTypes.WalkNormal].length
-          : 3, // Non-moving frame
+          : 3,
       }));
     }, ANIMATION_SPEED);
 
@@ -152,7 +146,6 @@ export default function TopicDetailedPage({
       return;
     }
 
-    // Reset transcript and start fresh
     resetTranscript();
 
     setRecordingState((prev) => ({
@@ -163,7 +156,6 @@ export default function TopicDetailedPage({
       isTalking: false,
     }));
 
-    // Start listening with continuous mode
     SpeechRecognition.startListening({
       continuous: true,
       language: "en-US",
@@ -172,21 +164,18 @@ export default function TopicDetailedPage({
     console.log("Speech recognition started");
   }, [browserSupportsSpeechRecognition, resetTranscript]);
 
-  // Stop recording
   const stopRecording = useCallback(() => {
     console.log("Stopping recording...");
 
     SpeechRecognition.stopListening();
     setRecordingState((prev) => ({ ...prev, isRecording: false }));
 
-    // Clean up timeouts
     if (talkingTimeoutRef.current) {
       clearTimeout(talkingTimeoutRef.current);
     }
 
     console.log("Final transcript:", transcript);
 
-    // Redirect to sessions page
     router.push(`/t/${topicId}/sessions`);
   }, [router, topicId, transcript]);
 
@@ -212,16 +201,14 @@ export default function TopicDetailedPage({
   return (
     <div className="space-y-8">
       {recordingState.isRecording ? (
-        // Recording View
         <>
           <div className="flex gap-10 py-10">
-            {/* Duck Animation */}
             <div
               className={`w-70 h-70 rounded-full bg-white border-4 transition-colors duration-200 ${
                 recordingState.isTalking
                   ? "border-green-600"
                   : listening
-                    ? "border-blue-500"
+                    ? "border-yellow-600"
                     : "border-red-500"
               }`}
             >
@@ -244,7 +231,7 @@ export default function TopicDetailedPage({
               <p className="text-xl font-bold mb-4">
                 Elapsed: {formatTime(recordingState.time)}
               </p>
-              <p className="text-sm mb-4 text-gray-600">
+              <p className="text-sm mb-4 text-neutral-300">
                 Microphone: {listening ? "🎤 ON" : "❌ OFF"}
               </p>
               <ul className="space-y-5">
@@ -263,19 +250,13 @@ export default function TopicDetailedPage({
               </ul>
             </div>
           </div>
-          {/* Colours */}
+
           {/* Transcript */}
-          <div className="bg-gray-50 p-4 rounded-lg min-h-[120px]">
+          <div className="bg-neutral-800 p-4 rounded-lg min-h-[120px]">
             <h3 className="font-medium mb-2">Transcript:</h3>
-            <p className="italic text-gray-700">
+            <p className="italic">
               {transcript || "Start speaking to see your transcript here..."}
             </p>
-          </div>
-
-          {/* Debug Info */}
-          <div className="text-sm text-gray-500">
-            <p>Listening: {listening ? "Yes" : "No"}</p>
-            <p>Transcript length: {transcript.length} characters</p>
           </div>
 
           {/* Stop Button */}
