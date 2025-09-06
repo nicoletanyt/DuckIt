@@ -11,15 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import FileItem from "@/components/file-item";
-import FeedbackItem from "@/components/feedback-item";
-import {
-  Import,
-  Mic,
-  MonitorSmartphone,
-  Trash2,
-  StopCircle,
-  Play,
-} from "lucide-react";
+import { Import, MonitorSmartphone, Trash2 } from "lucide-react";
 import { FaGoogleDrive, FaStop, FaPlay } from "react-icons/fa";
 import SpeechRecognition, {
   useSpeechRecognition,
@@ -161,7 +153,6 @@ export default function TopicDetailedPage({
 
     SpeechRecognition.startListening({
       continuous: true,
-      language: "en-US",
     });
 
     console.log("Speech recognition started");
@@ -171,7 +162,13 @@ export default function TopicDetailedPage({
     console.log("Stopping recording...");
 
     SpeechRecognition.stopListening();
-    setRecordingState((prev) => ({ ...prev, isRecording: false, time: 0, isTalking: false, frame: 3 }));
+    setRecordingState((prev) => ({
+      ...prev,
+      isRecording: false,
+      time: 0,
+      isTalking: false,
+      frame: 3,
+    }));
 
     if (talkingTimeoutRef.current) {
       clearTimeout(talkingTimeoutRef.current);
@@ -250,7 +247,6 @@ export default function TopicDetailedPage({
               {transcript || "Start speaking to see your transcript here..."}
             </p>
           </div>
-
         ) : (
           // Default View
           <div className="w-full grid grid-cols-2 gap-12 transition-all transition-discrete">

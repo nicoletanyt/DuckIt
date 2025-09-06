@@ -56,7 +56,12 @@ export default function TopicLayout({
             </TabsTrigger>
           </Link>
         </TabsList>
-        <TabsContent className="flex justify-center items-center" value={defaultTab}>{children}</TabsContent>
+        <TabsContent
+          className="flex justify-center items-center"
+          value={defaultTab}
+        >
+          {children}
+        </TabsContent>
       </Tabs>
     </div>
   );
