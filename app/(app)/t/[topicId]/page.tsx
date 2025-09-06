@@ -201,8 +201,8 @@ export default function TopicDetailedPage({
   return (
     <div className="space-y-8">
       {recordingState.isRecording ? (
-        <>
-          <div className="flex gap-10 py-10">
+        <div className="w-full flex items-center justify-center flex-col">
+          <div className="flex flex-col gap-10 py-10">
             <div
               className={`w-70 h-70 rounded-full bg-white border-4 transition-colors duration-200 ${
                 recordingState.isTalking
@@ -268,7 +268,7 @@ export default function TopicDetailedPage({
             <StopCircle className="w-5 h-5 mr-2" />
             Stop Recording
           </Button>
-        </>
+        </div>
       ) : (
         // Default View
         <>
